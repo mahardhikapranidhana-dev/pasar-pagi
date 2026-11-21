@@ -1,0 +1,1669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pasar Pagi Adventure</title>
+<meta name="description" content="English practice for SD learners, CEFR Pre-A1 to A2.">
+<meta name="theme-color" content="#1d6a50">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/icon-32.png">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Lexend:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* Pasar pagi: a striped market awning over a mint morning sky. Map of stalls -> each stall a ladder of sub-levels -> one calm game stage.
+     Colour roles (each skill keeps one colour everywhere):
+     leaf = brand + Reading; cabai = awning + Speaking; sea = Listening + focus ring; ochre = Writing;
+     mango = the one warm accent (progress fill, halo); good = right-answer feedback.
+     White text on leaf/cabai/sea/ochre/good is >= 5:1. --line is for dividers only; control borders use --edge (>= 3:1). */
+  --sky:#e4f2ec;
+  --leaf:#1d6a50;
+  --mango:#ffb627;
+  --cabai:#c23c20;
+  --sea:#236a87;
+  --ochre:#8a6000;
+  --star:#b67c00;
+  --ink:#1b2925;
+  --paper:#ffffff;
+  --muted:#566b64;
+  --line:#c9e0d7;
+  --edge:#6f877e;
+  --good:#1b7547;
+  --goodbg:#e3f5ea;
+  --soft:#fff3d4;
+  --display:"Baloo 2","Trebuchet MS",system-ui,sans-serif;
+  --body:"Lexend","Segoe UI",system-ui,sans-serif;
+  color-scheme: light;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--sky);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.5;min-height:100%}
+button{font:inherit;color:inherit;cursor:pointer}
+button:disabled{cursor:not-allowed}
+button:focus-visible,a:focus-visible{outline:3px solid var(--sea);outline-offset:3px}
+/* Press feedback for every enabled button: a tap must visibly register, even on a muted tablet. */
+button:not(:disabled):active{transform:translateY(1px) scale(.97)}
+@media (hover:hover){
+  .ghost:not(:disabled):hover,.goods:not(:disabled):hover,.tile:not(:disabled):hover,.toy:hover,.card:hover,.slot:hover,.seg button:hover,.pill:hover,.zone:not(:disabled):hover{border-color:var(--sea);border-style:solid}
+  .primary:not(:disabled):hover,.play-btn:not(:disabled):hover,.big:hover,.speak:hover,.coinbtn:hover{filter:brightness(.9)}
+  .link:hover{text-decoration-thickness:3px}
+}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+h1,h2,h3{font-family:var(--display);line-height:1.05;text-wrap:balance;margin:0}
+p{margin:0}
+[hidden]{display:none !important}
+
+.awning{height:30px;background:repeating-linear-gradient(90deg,var(--cabai) 0 40px,#fff8ef 40px 80px)}
+.scallop{height:18px;background:
+  radial-gradient(circle at 20px 0,var(--cabai) 18px,transparent 19px) 0 0/80px 18px repeat-x,
+  radial-gradient(circle at 60px 0,#fff8ef 18px,transparent 19px) 0 0/80px 18px repeat-x;
+  filter:drop-shadow(0 3px 0 rgba(27,41,37,.08))}
+
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+header.top{display:flex;flex-wrap:wrap;gap:18px 28px;align-items:flex-end;justify-content:space-between;padding:18px 0 10px}
+.brand h1{font-size:clamp(40px,7vw,68px);font-weight:800;color:var(--leaf);letter-spacing:-.01em}
+.brand h1 span{color:var(--cabai)}
+.brand p{color:var(--muted);font-size:15px;margin-top:4px}
+.controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.pill{border:2px solid var(--leaf);background:var(--paper);color:var(--leaf);border-radius:999px;padding:8px 16px;font-weight:600;font-size:15px;min-height:44px}
+.pill[aria-pressed="true"]{background:var(--leaf);color:#fff}
+.pill.alt{border-color:var(--ink);color:var(--ink)}
+
+.shields{display:flex;flex-wrap:wrap;gap:10px;padding:6px 0 16px}
+.shield{display:flex;align-items:center;gap:10px;background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:8px 12px}
+.shield .badge{width:30px;height:34px;clip-path:polygon(50% 0,100% 16%,100% 58%,50% 100%,0 58%,0 16%);display:grid;place-items:center;color:#fff;font-weight:700;font-size:14px;font-family:var(--display)}
+.shield .name{font-size:13px;color:var(--muted);line-height:1.2}
+.pips{display:flex;gap:3px;margin-top:3px}
+.pips i{width:10px;height:10px;border-radius:3px;background:var(--line)}
+.pips i.on{background:var(--mango)}
+
+/* Today card */
+.today{background:var(--leaf);color:#fff;border-radius:20px;padding:18px 20px;display:grid;grid-template-columns:1.4fr 1fr;gap:16px 28px;align-items:center;margin-bottom:22px}
+.today h2{font-size:28px;color:#fff}
+.today .sub{color:#cfe8dd;font-size:14px;margin-top:2px}
+.bar{height:14px;border-radius:999px;background:rgba(255,255,255,.2);overflow:hidden;margin:12px 0 6px}
+.bar i{display:block;height:100%;background:var(--mango);border-radius:999px}
+.today .nums{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:14px;color:#e2f2ea;font-variant-numeric:tabular-nums}
+.today .nums b{color:#fff;font-size:16px}
+.today .go{display:flex;flex-direction:column;gap:8px;align-items:flex-start}
+.today .plan{font-size:14px;color:#e2f2ea}
+.big{background:var(--mango);color:var(--ink);border:0;border-radius:14px;padding:13px 22px;font-weight:700;font-size:18px}
+/* The sea focus ring is 1.35:1 on the leaf card; white is 6.5:1. */
+.today :focus-visible{outline-color:#fff}
+@media (max-width:720px){.today{grid-template-columns:1fr}}
+
+/* Map */
+.map-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:8px;margin:8px 0 14px}
+.map-head h2{font-size:30px}
+.map-head p{color:var(--muted);font-size:15px;max-width:60ch}
+.stalls{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:18px;padding-bottom:28px}
+.stall{background:var(--paper);border:1px solid var(--line);border-radius:18px;overflow:hidden;display:flex;flex-direction:column;position:relative}
+.stall .mini{height:16px;background:repeating-linear-gradient(90deg,var(--c) 0 22px,#fff8ef 22px 44px)}
+/* Locked: grey awning + grey picture, but text stays full contrast so the unlock instruction is readable. */
+.stall.locked{background:#f6f8f7}
+.stall.locked .mini{background:repeating-linear-gradient(90deg,#aab8b3 0 22px,#fff8ef 22px 44px)}
+.stall.locked .em{filter:grayscale(1);opacity:.6}
+.stall.locked .lockmsg{color:var(--ink);font-weight:500}
+.stall .body{padding:14px 16px 16px;display:flex;flex-direction:column;gap:8px;flex:1}
+.stall .em{font-size:52px;line-height:1}
+.stall h3{font-size:26px}
+.stall .seller{font-size:13px;color:var(--muted)}
+.stall .what{font-size:15px}
+.prog{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.pbar{height:8px;border-radius:999px;background:var(--line);overflow:hidden}
+.pbar i{display:block;height:100%;background:var(--c, var(--good))}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:inline-block;font-size:12px;font-weight:600;padding:3px 9px;border-radius:999px;background:var(--soft);color:#6b4a00;white-space:nowrap}
+.chip.id{background:#e8f1f5;color:var(--sea);font-family:ui-monospace,Menlo,Consolas,monospace;font-weight:500}
+.stall .foot{display:flex;justify-content:space-between;align-items:center;margin-top:auto;padding-top:8px;gap:8px}
+.lockmsg{font-size:13px;color:var(--muted)}
+/* Earned = solid gold star (3.2:1+ on every card); not earned = outline star, so the count reads by shape too. */
+.stars{color:var(--star);font-size:20px;letter-spacing:2px;white-space:nowrap}
+.stars .off{color:var(--muted)}
+.play-btn{background:var(--c);color:#fff;border:0;border-radius:12px;padding:9px 18px;font-weight:600;min-height:44px}
+.play-btn:disabled{background:var(--line);color:var(--muted)}
+.next-badge{position:absolute;top:24px;right:12px;background:var(--good);color:#fff;font-size:12px;font-weight:600;padding:4px 10px;border-radius:999px}
+
+/* Stall page */
+.panel-card{background:var(--paper);border:1px solid var(--line);border-radius:22px;padding:18px clamp(14px,3vw,28px) 24px;margin-bottom:28px}
+.stall-top{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center;justify-content:space-between}
+.stall-top .t{display:flex;align-items:center;gap:12px}
+.stall-top .em{font-size:44px}
+.stall-top h2{font-size:34px}
+.stall-top p{color:var(--muted);font-size:14px}
+.levels{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-top:18px}
+.lvl{background:var(--paper);border:3px solid var(--edge);border-radius:16px;padding:10px 12px;text-align:left;display:flex;flex-direction:column;gap:4px;min-height:118px;position:relative}
+.lvl:hover:not(:disabled){border-color:var(--sea)}
+.lvl .code{font-family:var(--display);font-weight:800;font-size:22px;color:var(--sea);line-height:1}
+.lvl .ttl{font-size:14px;font-weight:600;line-height:1.25}
+.lvl .bd{font-size:11px;color:var(--muted)}
+.lvl .stars{font-size:16px;margin-top:auto}
+.lvl.cur{border-color:var(--ochre);box-shadow:0 0 0 4px var(--mango)}
+.lvl .nexttag{position:absolute;top:8px;right:10px;font-size:12px;font-weight:700;background:var(--ochre);color:#fff;border-radius:999px;padding:2px 9px}
+.lvl.done{background:#f6fbf8}
+.lvl:disabled{background:#f1f4f3;color:var(--muted);border-color:var(--line)}
+.lvl:disabled .code{color:var(--muted)}
+.lvl .medal{position:absolute;top:8px;right:10px;font-size:20px}
+.legend{font-size:13px;color:var(--muted);margin-top:14px;max-width:75ch}
+
+/* Stage */
+.stage-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 16px}
+.stage-title{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.stage-title .em{font-size:34px}
+.stage-title h2{font-size:28px}
+.ghost{background:transparent;border:2px solid var(--edge);border-radius:12px;padding:7px 14px;font-weight:600;font-size:15px;min-height:44px}
+.roundbox{display:flex;align-items:center;gap:10px}
+.round-txt{font-size:14px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+.dots{display:flex;gap:5px;flex-wrap:wrap;max-width:260px}
+.dots i{width:12px;height:12px;border-radius:50%;background:var(--paper);border:2px solid var(--edge)}
+.dots i.done{background:var(--good);border-color:var(--good)}
+.dots i.now{background:var(--mango);border-color:var(--ink)}
+.instr{margin:16px 0 8px;display:flex;flex-direction:column;gap:2px}
+.instr-en{font-family:var(--display);font-size:26px;font-weight:700;color:var(--leaf)}
+.instr-id{color:var(--muted);font-size:15px}
+.link{background:none;border:0;padding:0 4px;min-height:44px;color:var(--sea);text-decoration:underline;font-size:15px;align-self:flex-start}
+.prompt{display:flex;flex-wrap:wrap;align-items:center;gap:12px;background:var(--sky);border-radius:16px;padding:10px 12px;margin:8px 0 16px}
+.speak{background:var(--leaf);color:#fff;border:0;border-radius:12px;padding:10px 16px;font-weight:600;display:flex;gap:8px;align-items:center}
+.caption{flex:1;min-width:180px;font-size:19px;font-weight:500}
+.caption small{display:block;font-size:13px;color:var(--muted);font-weight:400}
+.feedback{min-height:30px;margin-top:14px;font-family:var(--display);font-size:22px;font-weight:700;color:var(--good);text-align:center}
+.feedback.try{color:#9a5b00}
+
+.choice-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:14px}
+.choice{background:var(--paper);border:3px solid var(--edge);border-radius:20px;min-height:140px;display:grid;place-items:center;padding:10px;transition:transform .15s}
+.choice:hover{transform:translateY(-2px);border-color:var(--sea)}
+.choice.wait{opacity:.6}
+.choice .emoji{font-size:clamp(50px,10vw,80px);line-height:1}
+.choice .numeral{font-family:var(--display);font-weight:800;font-size:clamp(48px,10vw,72px);color:var(--sea);line-height:1}
+.swatch{width:clamp(64px,13vw,92px);height:clamp(64px,13vw,92px);border-radius:50%;border:3px solid rgba(27,41,37,.15)}
+.frame{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;font-size:clamp(20px,4.2vw,30px);line-height:1.15}
+.right{border-color:var(--good) !important;background:var(--goodbg) !important;animation:pop .35s ease}
+/* Hint: a dark ring (15:1) carries the signal; the mango halo is the warm accent around it. */
+.glow{box-shadow:0 0 0 4px var(--ink),0 0 0 9px var(--mango);animation:pulse 1s ease-in-out 3}
+.wobble{animation:wobble .4s ease}
+@keyframes pop{50%{transform:scale(1.06)}}
+@keyframes pulse{50%{box-shadow:0 0 0 4px var(--ink),0 0 0 14px rgba(255,182,39,.55)}}
+@keyframes wobble{20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(3px)}}
+
+/* Toy scenes */
+.scene{position:relative;height:300px;border-radius:18px;background:linear-gradient(#f7fcfa 0 78%,#e9dcc3 78% 100%);border:1px solid var(--line);overflow:hidden}
+.scene.garden{background:linear-gradient(#eaf6fb 0 74%,#bfe3a8 74% 100%)}
+.table .top{position:absolute;left:6%;width:46%;top:48%;height:16px;background:#a0643a;border-radius:6px}
+.table .leg{position:absolute;top:calc(48% + 14px);bottom:10%;width:12px;background:#8a5430;border-radius:3px}
+.table .leg.l{left:9%}.table .leg.r{left:calc(52% - 12px - 3%)}
+.box{position:absolute;left:61%;width:21%;top:60%;bottom:10%;background:#d89b55;border:4px solid #b97a36;border-top-width:8px;border-radius:4px;z-index:2}
+.tree{position:absolute;left:4%;width:40%;top:2%;bottom:12%;display:grid;place-items:center;font-size:min(190px,24vw);line-height:1;z-index:2;pointer-events:none}
+.zone{position:absolute;background:transparent;border:3px dashed transparent;border-radius:14px;display:grid;place-items:center;font-size:clamp(34px,7vw,52px);padding:0;z-index:3}
+.zone.back{z-index:1}
+.scene.armed .zone{border-color:rgba(42,122,155,.45);background:rgba(42,122,155,.06)}
+.tray{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin-top:14px}
+.toy{background:var(--paper);border:3px solid var(--edge);border-radius:18px;width:88px;height:88px;font-size:48px;display:grid;place-items:center}
+.toy[aria-pressed="true"]{border-color:var(--sea);background:#e8f1f5;transform:translateY(-4px)}
+
+/* Shop */
+.shop{display:grid;gap:16px}
+.customer{display:flex;align-items:center;gap:14px}
+.customer .face{font-size:64px;line-height:1}
+.bubble{background:var(--soft);border-radius:18px 18px 18px 4px;padding:10px 16px;font-size:19px;font-weight:500;max-width:46ch}
+.bubble small{display:block;font-size:13px;color:#7a5b10;font-weight:400}
+.shelf{display:flex;flex-wrap:wrap;gap:10px;background:#f6efe2;border-radius:16px;padding:12px;border-bottom:8px solid #c99a5e;align-items:center}
+.goods{background:var(--paper);border:3px solid var(--edge);border-radius:16px;width:96px;padding:8px 4px;display:flex;flex-direction:column;align-items:center;gap:2px}
+.goods .e{font-size:44px;line-height:1.1}
+.goods .price{font-size:13px;font-weight:600;color:var(--muted);font-variant-numeric:tabular-nums}
+.list{background:var(--paper);border:2px solid var(--line);border-radius:14px;padding:10px 14px;font-size:30px;letter-spacing:2px}
+.list small{display:block;font-size:12px;color:var(--muted);letter-spacing:0}
+.bagrow{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.bag{flex:1;min-width:220px;min-height:86px;border:3px dashed var(--line);border-radius:16px;padding:8px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.bag .lbl{color:var(--muted);font-size:14px;width:100%}
+.bag button{background:none;border:0;font-size:36px;line-height:1;padding:2px;min-width:48px;min-height:48px}
+.primary{background:var(--cabai);color:#fff;border:0;border-radius:14px;padding:14px 22px;font-weight:600;font-size:18px}
+.primary:disabled{opacity:.45}
+.options{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.opt{background:var(--paper);border:3px solid var(--edge);border-radius:16px;padding:14px;text-align:left;font-size:18px;font-weight:500}
+.opt:hover{border-color:var(--sea)}
+.opt .coins{display:block;font-size:20px;letter-spacing:1px;margin-top:4px}
+.opt.say{border-radius:18px 18px 18px 4px}
+.coinbtn{font-size:40px;background:var(--soft);border:3px solid #a07a1c;border-radius:50%;width:70px;height:70px}
+
+/* Spelling */
+.spell{display:flex;flex-direction:column;align-items:center;gap:18px}
+.spell .pic{font-size:96px;line-height:1;display:grid;place-items:center;min-height:100px}
+.spell .pic .numeral{font-family:var(--display);font-weight:800;font-size:88px;color:var(--sea)}
+.blanks{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.blank{width:50px;height:60px;border-bottom:4px solid var(--leaf);display:grid;place-items:center;font-family:var(--display);font-size:36px;font-weight:700;color:var(--leaf)}
+.tiles{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;max-width:560px}
+.tile{width:58px;height:58px;border-radius:14px;border:3px solid var(--edge);background:var(--soft);font-family:var(--display);font-size:32px;font-weight:700}
+.tile:disabled{opacity:.25}
+
+/* Story */
+.panels{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.spanel{border:1px solid var(--line);border-radius:16px;padding:10px;display:flex;flex-direction:column;gap:8px;background:#fbfdfc}
+.spanel .scene-e{font-size:34px;text-align:center;min-height:48px}
+.spanel .num{font-family:var(--display);font-weight:800;color:var(--sea);font-size:18px}
+.slot{min-height:70px;border:3px dashed var(--edge);border-radius:12px;background:var(--paper);padding:8px;text-align:left;font-size:16px}
+.slot.filled{border-style:solid;border-color:var(--sea)}
+.slot.locked{border-color:var(--good);background:var(--goodbg)}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-top:14px}
+.card{background:var(--soft);border:2px solid #a07a1c;border-radius:12px;padding:10px 12px;text-align:left;font-size:16px}
+.row{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px;align-items:center;justify-content:center}
+.storytext{background:#fbfdfc;border:1px solid var(--line);border-radius:16px;padding:12px 16px;margin-bottom:14px;max-width:65ch}
+.storytext p{margin:2px 0}
+.q{font-family:var(--display);font-size:24px;font-weight:700;margin-bottom:10px}
+
+.end{text-align:center;display:flex;flex-direction:column;align-items:center;gap:12px;padding:10px 0}
+.end h3{font-size:40px;color:var(--leaf)}
+.end .stars{font-size:44px}
+.end .chips{justify-content:center;max-width:560px}
+.end .gold{background:var(--soft);border-radius:12px;padding:8px 14px;font-size:15px}
+
+.banner{background:var(--soft);border:2px solid var(--mango);border-radius:16px;padding:12px 16px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:16px}
+.overlay{position:fixed;inset:0;background:rgba(27,41,37,.5);display:flex;align-items:flex-start;justify-content:center;padding:24px 12px;overflow-y:auto;z-index:10}
+.sheet{background:var(--paper);border-radius:20px;max-width:920px;width:100%;padding:22px clamp(14px,3vw,28px)}
+.sheet-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:12px}
+.sheet h2{font-size:32px}
+.sheet h3{font-size:22px;margin-top:18px;margin-bottom:6px}
+.sheet .sub{color:var(--muted);font-size:14px}
+.tiles4{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin:14px 0}
+.stat{border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.stat .k{font-size:13px;color:var(--muted)}
+.stat .v{font-family:var(--display);font-size:32px;font-weight:800;font-variant-numeric:tabular-nums}
+.stat .n{font-size:13px}
+.state{display:inline-block;font-size:12px;font-weight:600;padding:3px 10px;border-radius:999px;white-space:nowrap}
+.state.ok{background:var(--goodbg);color:var(--good)}
+.state.mid{background:var(--soft);color:#8a5a00}
+.state.none{background:#eef2f1;color:var(--muted)}
+.state.warn{background:#fde6df;color:#a5321a}
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{text-align:left;padding:9px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+td .idl{display:block;color:var(--muted);font-size:12px}
+.seg{display:inline-flex;border:2px solid var(--edge);border-radius:12px;overflow:hidden}
+.seg button{border:0;background:var(--paper);padding:6px 12px;font-size:15px;min-height:44px;min-width:48px}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button[aria-pressed="true"]{background:var(--leaf);color:#fff}
+.setrow{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;margin:8px 0}
+.setrow label{font-size:14px;min-width:150px}
+.words{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.word{font-size:13px;border:1px solid var(--line);border-radius:999px;padding:2px 10px}
+.word.m{border-color:var(--good);background:var(--goodbg)}
+.word.r{border-color:var(--mango);background:var(--soft)}
+.note{font-size:13px;color:var(--muted);margin-top:10px;max-width:75ch}
+footer{color:var(--muted);font-size:13px;padding:0 0 28px}
+
+@media (max-width:520px){
+  .scene{height:250px}
+  .toy{width:72px;height:72px;font-size:40px}
+  .blank{width:40px}
+  .tile{width:50px;height:50px}
+  /* Two level cards per row instead of one 118px card per row. */
+  .levels{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .lvl{min-height:100px;padding:10px}
+  .lvl .ttl{font-size:13px}
+}
+
+/* While a level is playing on a phone or short screen, the brand header and shields collapse
+   so the pictures sit on the first screen. The awning stays as the identity strip. */
+@media (max-width:720px),(max-height:820px){
+  body[data-view="stage"] header.top,
+  body[data-view="stage"] #shields{display:none}
+  body[data-view="stage"] .awning{height:18px}
+  body[data-view="stage"] .scallop{height:12px;background-size:80px 12px}
+  body[data-view="stage"] #stage{margin-top:10px}
+  .stage-head{gap:8px 12px}
+  .stage-title .em{font-size:26px}
+  .stage-title h2{font-size:21px}
+  .instr{margin:10px 0 4px}
+  .instr-en{font-size:21px}
+  .prompt{margin:6px 0 12px;padding:8px 10px;gap:8px}
+  .caption{font-size:17px}
+  .choice{min-height:112px}
+  /* Back and round count share the first row; the band chip is already on the stall page. */
+  .stage-title{order:3;flex-basis:100%}
+  #stBand{display:none}
+}
+@media (max-width:460px){
+  /* Listen and Hint become 48px icon buttons beside the caption: one row instead of two.
+     Both keep their aria-label; the 🔊 and 💡 icons are what pre-readers use anyway. */
+  .prompt{flex-wrap:nowrap}
+  .prompt .btn-txt{display:none}
+  .speak,#hintBtn{min-width:48px;min-height:48px;justify-content:center;padding:8px;font-size:20px}
+  .caption{min-width:0}
+  .scene{height:220px}
+  .toy{width:64px;height:64px;font-size:36px}
+  .tray{gap:10px;margin-top:10px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none !important;transition:none !important}}
+</style>
+</head>
+<body>
+<div class="awning" aria-hidden="true"></div>
+<div class="scallop" aria-hidden="true"></div>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <h1>Pasar Pagi <span>Adventure</span></h1>
+      <p>English practice for SD learners · CEFR Pre-A1 to A2 · 60 sub-levels across 5 stalls</p>
+    </div>
+    <div class="controls">
+      <button id="bahasaBtn" class="pill" aria-pressed="true"><span lang="id">Bantuan Bahasa</span>: <span id="bahasaState">On</span></button>
+      <button id="parentBtn" class="pill alt">Parent &amp; teacher view</button>
+    </div>
+  </header>
+
+  <div class="shields" id="shields" role="group" aria-label="Your shields"></div>
+
+  <div id="saveBanner" class="banner" role="status" hidden>
+    <span><b>Progress can't be saved in this browser window.</b> Stars will be lost when the page closes. <i lang="id">Kemajuan tidak tersimpan di jendela ini.</i></span>
+    <button id="saveOk" class="ghost">OK, play anyway</button>
+  </div>
+
+  <div id="capBanner" class="banner" hidden>
+    <span id="capText"></span>
+    <button id="capOk" class="ghost">Keep playing</button>
+  </div>
+
+  <main>
+    <section id="mapView" aria-labelledby="mapTitle">
+      <div class="today" id="today"></div>
+      <div class="map-head">
+        <h2 id="mapTitle">Choose a stall</h2>
+        <p>Each stall is a ladder of sub-levels. Two stars open the next one; three stars on two different days earn a gold medal.</p>
+      </div>
+      <div class="stalls" id="stalls"></div>
+    </section>
+
+    <section id="stallView" class="panel-card" hidden></section>
+
+    <section id="stage" class="panel-card" hidden>
+      <div class="stage-head">
+        <button id="backBtn" class="ghost">← Back</button>
+        <div class="stage-title"><span class="em" id="stEmoji"></span><h2 id="stName"></h2><span class="chip" id="stBand"></span></div>
+        <div class="roundbox"><span class="round-txt" id="roundTxt"></span><div class="dots" id="dots" aria-hidden="true"></div></div>
+      </div>
+      <div class="instr">
+        <p class="instr-en" id="instrEn"></p>
+        <p class="instr-id" id="instrId" lang="id"></p>
+        <button id="showId" class="link" lang="id" hidden>Bahasa?</button>
+      </div>
+      <div class="prompt" id="promptBar">
+        <button id="replay" class="speak" aria-label="Listen again"><span aria-hidden="true">🔊</span><span class="btn-txt"> Listen again</span></button>
+        <p id="caption" class="caption"></p>
+        <button id="hintBtn" class="ghost" aria-label="Hint"><span aria-hidden="true">💡</span><span class="btn-txt"> Hint</span></button>
+      </div>
+      <div id="play"></div>
+      <p id="feedback" class="feedback" aria-live="polite"></p>
+    </section>
+  </main>
+
+  <footer>Every round records the can-do it practises, first-try accuracy and hints. Words come back for review on day 1, 3, 7, 14 and 30. Audio uses your device's English voice; captions are always on.</footer>
+</div>
+
+<div id="parent" class="overlay" hidden role="dialog" aria-modal="true" aria-labelledby="parentTitle">
+  <div class="sheet" id="parentSheet"></div>
+</div>
+
+<script>
+(function(){
+"use strict";
+const KEY = "pasar-pagi-v2";
+const DAY = 86400000;
+const $ = (s, r=document) => r.querySelector(s);
+function el(tag, attrs, ...kids){
+  const n = document.createElement(tag);
+  for (const [k,v] of Object.entries(attrs||{})){
+    if (k === "class") n.className = v;
+    else if (k.startsWith("on") && typeof v === "function") n.addEventListener(k.slice(2), v);
+    else if (v !== false && v != null) n.setAttribute(k, v);
+  }
+  for (const k of kids.flat()){ if (k == null || k === false) continue; n.append(k.nodeType ? k : document.createTextNode(String(k))); }
+  return n;
+}
+const shuffle = a => { a = a.slice(); for (let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
+const pick = a => a[Math.floor(Math.random()*a.length)];
+const rint = (a, b) => a + Math.floor(Math.random()*(b - a + 1));
+const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
+const NUM = ["zero","one","two","three","four","five","six","seven","eight","nine","ten","eleven","twelve","thirteen","fourteen","fifteen","sixteen","seventeen","eighteen","nineteen","twenty"];
+function glow(node){ if (!node) return; node.classList.remove("glow"); void node.offsetWidth; node.classList.add("glow"); }
+function fill(list, n){ let out = []; while (out.length < n) out = out.concat(shuffle(list)); return out.slice(0, n); }
+
+/* ---------- Lexicon (Cambridge YL words, Indonesian-friendly pictures) ---------- */
+const LEX = {};
+function add(t, rows){ rows.forEach(([id, w, e, x]) => { LEX[id] = Object.assign({id, w, e, t}, x || {}); }); }
+add("fruit", [["apple","apple","🍎"],["banana","banana","🍌"],["orange","orange","🍊"],["mango","mango","🥭",{pl:"mangoes"}],["lemon","lemon","🍋"],["grapes","grapes","🍇",{plural:true}],["watermelon","watermelon","🍉"],["pineapple","pineapple","🍍"],["pear","pear","🍐"]]);
+add("colour", [["c-red","red",null,{sw:"#e53935"}],["c-blue","blue",null,{sw:"#1e66d0"}],["c-green","green",null,{sw:"#2e9b4f"}],["c-yellow","yellow",null,{sw:"#ffd23f"}],["c-orange","orange",null,{sw:"#ff8c1a"}],["c-pink","pink",null,{sw:"#ff7eb6"}],["c-purple","purple",null,{sw:"#8e44ad"}],["c-brown","brown",null,{sw:"#8d5a3b"}],["c-black","black",null,{sw:"#222222"}],["c-white","white",null,{sw:"#ffffff"}],["c-grey","grey",null,{sw:"#9aa0a6"}]]);
+add("number", NUM.slice(1).map((w, i) => ["n" + (i + 1), w, null, {num: i + 1}]));
+add("animal", [["cat","cat","🐈"],["dog","dog","🐕"],["fish","fish","🐟",{pl:"fish"}],["bird","bird","🐦"],["duck","duck","🦆"],["cow","cow","🐄"],["horse","horse","🐎"],["chicken","chicken","🐔"],["goat","goat","🐐"],["sheep","sheep","🐑",{pl:"sheep"}],["frog","frog","🐸"],["monkey","monkey","🐒"],["elephant","elephant","🐘"],["tiger","tiger","🐅"],["lion","lion","🦁"],["giraffe","giraffe","🦒"],["crocodile","crocodile","🐊"],["snake","snake","🐍"],["bear","bear","🐻"]]);
+add("family", [["mum","mum","👩🏽",{noart:true}],["dad","dad","👨🏽",{noart:true}],["baby","baby","👶🏽"],["grandma","grandma","👵🏽",{noart:true}],["grandpa","grandpa","👴🏽",{noart:true}],["brother","brother","👦🏽"],["sister","sister","👧🏽"]]);
+add("food", [["bread","bread","🍞",{mass:true}],["egg","egg","🥚"],["rice","rice","🍚",{mass:true}],["milk","milk","🥛",{mass:true}],["cake","cake","🍰"],["juice","juice","🧃",{mass:true}],["water","water","💧",{mass:true}],["icecream","ice cream","🍦",{mass:true}],["burger","burger","🍔"],["chips","chips","🍟",{plural:true}],["sweets","sweets","🍬",{plural:true}],["chocolate","chocolate","🍫",{mass:true}],["tomato","tomato","🍅",{pl:"tomatoes"}],["carrot","carrot","🥕"],["potato","potato","🥔",{pl:"potatoes"}]]);
+add("body", [["eye","eye","👁️"],["nose","nose","👃🏽"],["mouth","mouth","👄"],["ear","ear","👂🏽"],["hand","hand","✋🏽"],["foot","foot","🦶🏽"],["arm","arm","💪🏽"],["leg","leg","🦵🏽"],["hair","hair","💇🏽",{mass:true}],["face","face","🙂"]]);
+add("clothes", [["hat","hat","👒"],["shoes","shoes","👟",{plural:true}],["shirt","shirt","👔"],["tshirt","T-shirt","👕"],["dress","dress","👗"],["socks","socks","🧦",{plural:true}],["trousers","trousers","👖",{plural:true}],["jacket","jacket","🧥"],["glasses","glasses","👓",{plural:true}],["bag","bag","👜"]]);
+add("school", [["book","book","📕"],["pen","pen","🖊️"],["pencil","pencil","✏️"],["ruler","ruler","📏"],["computer","computer","💻"],["chair","chair","🪑"],["clock","clock","🕒"],["paint","paint","🎨",{mass:true}],["schoolbag","school bag","🎒"]]);
+add("toy", [["ball","ball","⚽"],["teddy","teddy","🧸"],["car","car","🚗"],["kite","kite","🪁"],["robot","robot","🤖"],["train","train","🚂"],["plane","plane","✈️"],["boat","boat","⛵"],["bike","bike","🚲"],["balloon","balloon","🎈"],["bus","bus","🚌"],["toyduck","duck","🦆"]]);
+add("misc", [["cup","cup","☕"],["bed","bed","🛏️"],["sun","sun","☀️"],["ship","ship","🚢"],["shoe","shoe","👞"]]);
+const ALL_TAP = Object.keys(LEX).filter(id => !["misc"].includes(LEX[id].t) && id !== "toyduck");
+const topicIds = t => Object.keys(LEX).filter(id => LEX[id].t === t);
+function plural(it){ if (it.plural) return it.w; if (it.pl) return it.pl; return it.w + "s"; }
+function thatIs(it){
+  if (it.sw || it.num) return `That is ${it.w}.`;
+  if (it.plural) return `Those are ${it.w}.`;
+  if (it.mass || it.noart) return `That is ${it.w}.`;
+  return `That is ${/^[aeiou]/.test(it.w) ? "an" : "a"} ${it.w}.`;
+}
+function promptFor(it){
+  if (it.sw) return `Tap ${it.w}.`;
+  if (it.num) return `Find ${it.w}.`;
+  if (it.noart) return `Find ${it.w}.`;
+  return `Find the ${it.w}.`;
+}
+function showItem(it){
+  if (it.sw) return el("span", {class:"swatch", style:`background:${it.sw}`});
+  if (it.num) return el("span", {class:"numeral"}, String(it.num));
+  return el("span", {class:"emoji"}, it.e);
+}
+
+/* ---------- Standard data ---------- */
+const DESC = {
+  "L-P":  {skill:"Listening", band:"Pre-A1", en:"Recognises familiar words in slow, clear speech", id:"Mengenali kata yang dikenal saat diucapkan pelan"},
+  "L-A1": {skill:"Listening", band:"A1", en:"Follows short, slow instructions with picture support", id:"Mengikuti instruksi pendek yang diucapkan pelan"},
+  "R-A1": {skill:"Reading", band:"A1", en:"Reads short sentences and phrases", id:"Membaca kalimat dan frasa pendek"},
+  "SI-A1":{skill:"Speaking", band:"A1", en:"Takes part in a short exchange (ask, answer, thank)", id:"Ikut dalam percakapan pendek dan sederhana"},
+  "M-A1": {skill:"Speaking", band:"A1", en:"Passes on simple information such as a price", id:"Menyampaikan informasi sederhana, misalnya harga"},
+  "W-A1": {skill:"Writing", band:"A1", en:"Spells simple, familiar words", id:"Mengeja kata sederhana yang sudah dikenal"},
+  "R-A2": {skill:"Reading", band:"A2", en:"Reads a short story and finds key information", id:"Membaca cerita pendek dan menemukan informasi penting"},
+  "W-A2": {skill:"Writing", band:"A2", en:"Links ideas with and, but, because, then", id:"Menghubungkan ide dengan and, but, because, then"}
+};
+const SKILLS = [{k:"Listening", c:"var(--sea)"},{k:"Reading", c:"var(--leaf)"},{k:"Speaking", c:"var(--cabai)"},{k:"Writing", c:"var(--ochre)"}];
+const BANDS = ["Band 0 · Pre-A1","Band 1 · A1.1","Band 2 · A1.2","Band 3 · A2.1"];
+const RATE = [0.72, 0.8, 0.86, 0.92];
+
+/* ---------- Sub-level content ---------- */
+const TAP_LEVELS = [
+  ["Fruit", {pool:["apple","banana","orange","mango"], opts:3, rounds:10}],
+  ["More fruit", {pool:topicIds("fruit"), opts:4, rounds:10}],
+  ["Count 1 to 5", {mode:"count", range:[1,5], cpool:["apple","banana","mango","orange","lemon","pear"], opts:3, rounds:10}],
+  ["Colours", {pool:["c-red","c-blue","c-green","c-yellow"], opts:3, rounds:10}],
+  ["Farm animals", {pool:["cat","dog","fish","bird","duck","cow","horse","chicken","goat","sheep"], opts:4, rounds:10}],
+  ["Count 6 to 10", {mode:"count", range:[6,10], cpool:["duck","fish","cat","egg","ball","car"], opts:3, rounds:10}],
+  ["All the colours", {pool:topicIds("colour"), opts:4, rounds:10}],
+  ["My family", {pool:topicIds("family"), opts:4, rounds:10}],
+  ["Food and drink", {pool:topicIds("food"), opts:4, rounds:12}],
+  ["Zoo animals", {pool:["monkey","elephant","tiger","lion","giraffe","crocodile","snake","bear","frog"], opts:4, rounds:12}],
+  ["My body", {pool:topicIds("body"), opts:4, rounds:12}],
+  ["Clothes", {pool:topicIds("clothes"), opts:4, rounds:12}],
+  ["Numbers 11 to 20", {mode:"numeral", pool:NUM.slice(11).map((_, i) => "n" + (i + 11)), opts:4, rounds:12}],
+  ["School things", {pool:topicIds("school"), opts:4, rounds:12}],
+  ["Toys and transport", {pool:topicIds("toy").filter(i => i !== "toyduck"), opts:5, rounds:12}],
+  ["Big market mix", {pool:ALL_TAP, opts:5, rounds:14}]
+].map(([title, cfg], i) => Object.assign({title, band:0, descs:["L-P"]}, cfg));
+
+const TOY_LEVELS = [
+  ["On or under?", {scene:"room", places:["on","under"], toys:["ball","teddy","car","toyduck"], rounds:8, band:1}],
+  ["In the box", {scene:"room", places:["on","under","in"], toys:["ball","teddy","car","toyduck"], rounds:8, band:1}],
+  ["Next to", {scene:"room", places:["on","under","in","next"], toys:["ball","teddy","car","toyduck"], rounds:8, band:1}],
+  ["More toys", {scene:"room", places:["on","under","in","next"], toys:["ball","teddy","car","toyduck","kite","robot"], rounds:10, band:1}],
+  ["Where is it?", {mode:"where", scene:"room", places:["on","under","in","next"], toys:["ball","teddy","car","toyduck","kite","robot"], rounds:8, band:1}],
+  ["Behind the tree", {scene:"garden", places:["behind","in","next"], toys:["ball","teddy","car","kite"], rounds:8, band:1}],
+  ["In front of", {scene:"garden", places:["behind","front","in","next"], toys:["ball","teddy","car","kite","train","plane"], rounds:10, band:2}],
+  ["Where is it? Garden", {mode:"where", scene:"garden", places:["behind","front","in","next"], toys:["ball","teddy","kite","train","plane","boat"], rounds:8, band:2}],
+  ["Room and garden", {scene:"mix", toys:["ball","teddy","car","kite","robot","train","plane","boat"], rounds:10, band:2}],
+  ["Toy master", {mode:"mix", scene:"mix", toys:["ball","teddy","car","toyduck","kite","robot","train","plane","boat","bike"], rounds:12, band:2}]
+].map(([title, cfg]) => Object.assign({title, descs: cfg.mode === "where" ? ["R-A1"] : cfg.mode === "mix" ? ["L-A1","R-A1"] : ["L-A1"]}, cfg));
+
+const PRICE = {banana:1, egg:1, apple:1, mango:2, orange:2, pear:2, juice:2, bread:3, milk:3, cake:4};
+const SHOP_LEVELS = [
+  ["First customers", {items:["banana","egg"], n:[1,3], customers:4, modes:["serve"], band:1}],
+  ["Fruit day", {items:["banana","mango","orange","apple"], n:[2,4], customers:4, modes:["serve"], band:1}],
+  ["Busy morning", {items:["banana","egg","mango","orange","cake"], n:[2,5], customers:5, modes:["serve"], band:1}],
+  ["Have you got…?", {items:["banana","egg","mango","cake"], n:[1,4], customers:5, modes:["havegot"], band:1}],
+  ["Your turn to shop", {items:["banana","mango","egg","apple"], n:[2,4], customers:4, modes:["buy"], band:1}],
+  ["Bigger orders", {items:["mango","orange","pear","cake","bread"], n:[3,8], customers:5, modes:["serve"], band:1}],
+  ["Two things, please", {items:["egg","banana","cake","bread","apple"], n:[1,3], customers:5, modes:["two"], band:2}],
+  ["Shop and pay", {items:["banana","mango","pear","juice","milk"], n:[3,6], customers:5, modes:["buy"], band:2}],
+  ["Market rush", {items:["banana","egg","mango","orange","cake","bread"], n:[2,5], customers:6, modes:["serve","havegot","two"], band:2}],
+  ["Warung master", {items:["banana","egg","mango","orange","pear","cake","bread","milk","juice"], n:[2,6], customers:6, modes:["serve","havegot","two","buy"], band:2}]
+].map(([title, cfg]) => Object.assign({title, descs:["L-A1","M-A1","SI-A1"]}, cfg));
+
+const SPELL_LEVELS = [
+  ["Three letters", {words:["cat","dog","sun","bus","hat","pen","cup","bed"], spare:2}],
+  ["Food words", {words:["egg","fish","milk","cake","rice","lemon"], spare:2}],
+  ["Animal words", {words:["frog","duck","goat","bird","cow","lion","bear"], spare:2}],
+  ["Colour words", {words:["c-red","c-blue","c-pink","c-green","c-black","c-white","c-brown"], spare:2}],
+  ["sh, ch, th", {words:["fish","shoe","ship","chair","n3","mouth"], spare:2}],
+  ["Number words", {words:["n1","n2","n4","n5","n6","n7","n8","n9","n10"], spare:3, rounds:8}],
+  ["Family words", {words:["mum","dad","baby","sister","brother"], spare:3}],
+  ["Body words", {words:["arm","leg","hand","foot","nose","ear","eye","hair"], spare:3}],
+  ["Clothes words", {words:["hat","socks","dress","shoes","jacket","shirt"], spare:3}],
+  ["Toy words", {words:["ball","kite","robot","train","plane","boat","bike"], spare:3}],
+  ["Long words", {words:["banana","orange","apple","mango","tiger","pencil","monkey"], spare:3}],
+  ["Listen only", {words:["cat","fish","cake","frog","c-red","ball","milk","duck"], spare:3, nopic:true}],
+  ["Market words", {words:["pear","bread","juice","carrot","tomato","potato","chips"], spare:3}],
+  ["Spelling champion", {words:["chicken","carrot","teddy","sister","c-yellow","c-purple","monkey","pencil","tomato","giraffe"], spare:4, nopic:true, rounds:10}]
+].map(([title, cfg]) => Object.assign({title, band:2, descs:["W-A1"]}, cfg));
+
+const STORIES = [
+  {title:"Sari at the market", panels:[
+    ["👧🏽👩🏽🛍️","Sari and her mum walked to the market."],
+    ["🥭🥭🥭🥭🥭🥭","She bought six mangoes from Pak Budi."],
+    ["👜💥🥭","Then she dropped her bag on the road!"],
+    ["👨🏽🤝👧🏽","Pak Budi helped her because he is kind."]],
+   qs:[["Why did Pak Budi help Sari?","Because he is kind.",["Because it is raining.","Because he likes cats."]],
+       ["What happened after Sari bought the mangoes?","She dropped her bag.",["She went to school.","She ate a cake."]]],
+   link:["Sari was happy ___ Pak Budi helped her.","because",["but","or"]]},
+  {title:"The rainy day", panels:[
+    ["🌧️🏠","It was raining on Monday morning."],
+    ["☂️👦🏽","Budi took his big yellow umbrella."],
+    ["🚶🏽‍♂️🏫","Then he walked to school with Dina."],
+    ["🌈😊","They were happy because the rain stopped."]],
+   qs:[["Why were they happy?","Because the rain stopped.",["Because it was Monday.","Because Budi had a cake."]],
+       ["What did Budi take?","His yellow umbrella.",["His red bike.","His school bag."]]],
+   link:["Budi took his umbrella ___ it was raining.","because",["but","or"]]},
+  {title:"The football game", panels:[
+    ["⚽🏫","After school, the children played football."],
+    ["🥅👧🏽","Dina kicked the ball into the goal."],
+    ["🤕👦🏽","But Rudi fell down and hurt his leg."],
+    ["🩹👩🏽‍🏫","The teacher helped him, then they played again."]],
+   qs:[["Who kicked the ball into the goal?","Dina.",["Rudi.","The teacher."]],
+       ["What happened to Rudi?","He hurt his leg.",["He ate lunch.","He went home."]]],
+   link:["Rudi was sad ___ he hurt his leg.","because",["but","or"]]},
+  {title:"The hungry cat", panels:[
+    ["🐈🏪","A small cat came to Bu Ani's warung."],
+    ["🐟❓","It wanted some fish, but Bu Ani had no fish."],
+    ["🥛🐈","Then she gave the cat some milk."],
+    ["😺💤","The cat was happy and it slept under the table."]],
+   qs:[["What did the cat want?","Some fish.",["Some cake.","A ball."]],
+       ["What did Bu Ani give the cat?","Some milk.",["Some rice.","A hat."]]],
+   link:["The milk was not fish, ___ the cat liked it.","but",["because","or"]]},
+  {title:"Grandma's birthday", panels:[
+    ["🎂👵🏽","It was Grandma's birthday on Sunday."],
+    ["🍫🍰👧🏽","Sari and Mum made a chocolate cake."],
+    ["🎁🌸👦🏽","Budi gave Grandma some pretty flowers."],
+    ["🎉😊","Grandma laughed because she was very happy."]],
+   qs:[["Who made the cake?","Sari and Mum.",["Budi and Dad.","Grandma."]],
+       ["What did Budi give Grandma?","Some flowers.",["A cake.","A kite."]]],
+   link:["The cake was small, ___ it was very good.","but",["because","or"]]},
+  {title:"A trip to the beach", panels:[
+    ["🚗🏖️","On Saturday, Dimas and his dad drove to the beach."],
+    ["🏊🏽‍♂️🌊","Dimas swam in the sea for an hour."],
+    ["🏰👦🏽","Then they made a big sand castle."],
+    ["🌊💥🏰","But a big wave broke the castle!"],
+    ["😂🍦","They laughed and ate ice cream on the beach."]],
+   qs:[["What broke the castle?","A big wave.",["A dog.","Dimas's dad."]],
+       ["Who went to the beach with Dimas?","His dad.",["His sister.","His teacher."]],
+       ["What did they do after the wave?","They laughed and ate ice cream.",["They went to school.","They made a cake."]]],
+   link:["Dimas was tired, ___ he was very happy.","but",["because","or"]]},
+  {title:"The lost kite", panels:[
+    ["🪁🌬️","It was windy, so Rina flew her kite."],
+    ["🌳🪁","Then the kite went into a tall tree."],
+    ["😢👧🏽","Rina was sad because she could not get it."],
+    ["🪜👦🏽","Her brother got a ladder and climbed the tree."],
+    ["🪁😊","He gave the kite back, and Rina said thank you."]],
+   qs:[["Where did the kite go?","Into a tall tree.",["Under the table.","Into the sea."]],
+       ["Why was Rina sad?","Because she could not get her kite.",["Because it was raining.","Because she was hungry."]],
+       ["Who climbed the tree?","Her brother.",["Her mum.","Rina."]]],
+   link:["Rina said thank you ___ her brother helped her.","because",["but","or"]]},
+  {title:"Nasi goreng for dinner", panels:[
+    ["🍳👨🏽","Dad wanted to make nasi goreng for dinner."],
+    ["🏪🥚","Budi went to the warung and bought six eggs."],
+    ["🧅🍚","Then Dad cooked rice, eggs and onions."],
+    ["🌶️😮","But Dad put in too many chillies!"],
+    ["💧😂","Everyone drank lots of water and laughed."]],
+   qs:[["What did Budi buy?","Six eggs.",["Six mangoes.","Some milk."]],
+       ["Who cooked the dinner?","Dad.",["Budi.","Grandma."]],
+       ["Why did everyone drink lots of water?","Because the food was very hot.",["Because they were at the pool.","Because it was cold."]]],
+   link:["The food was hot, ___ it was very good.","but",["because","or"]]},
+  {title:"The school trip", panels:[
+    ["🚌🏫","Class 3 went to the zoo by bus."],
+    ["🐘🍌","First, they saw an elephant eating bananas."],
+    ["🐒🧢","Then a monkey took Dina's hat!"],
+    ["🧑🏽‍🌾🧢","A zoo keeper got the hat back for her."],
+    ["📸😊","At the end, they took a class photo."]],
+   qs:[["How did the class go to the zoo?","By bus.",["By boat.","By plane."]],
+       ["What did the monkey take?","Dina's hat.",["A banana.","A camera."]],
+       ["What did they do at the end?","They took a class photo.",["They swam in the sea.","They ate a cake."]]],
+   link:["Dina laughed ___ the monkey looked funny.","because",["but","or"]]},
+  {title:"A visit to Grandpa's village", panels:[
+    ["🚆🏡","Sari's family took a train to Grandpa's village."],
+    ["🌾🐐🦆","There were goats, ducks and green rice fields."],
+    ["🐐🥪😱","Then a goat ate Sari's sandwich!"],
+    ["👴🏽🍌","Grandpa laughed and made her some fried bananas."],
+    ["🌙😴","That night, Sari slept well because she was tired."]],
+   qs:[["How did the family travel?","By train.",["By plane.","By bike."]],
+       ["What did the goat eat?","Sari's sandwich.",["Some flowers.","A hat."]],
+       ["Why did Sari sleep well?","Because she was tired.",["Because it was raining.","Because she was hungry."]]],
+   link:["The village was small, ___ it was very beautiful.","but",["because","or"]]}
+];
+const STORY_LEVELS = STORIES.map(s => ({title:s.title, story:s, band:3, descs:["R-A2","W-A2"]}));
+
+const STALLS = [
+  {id:"tap", name:"Listen & Tap", seller:"Pak Budi's picture stall", em:"🍉", c:"var(--cabai)", bands:"Band 0 · Pre-A1",
+   what:"Hear a word, a colour or a number. Tap the picture.", en:"Listen. Tap the right picture.", idn:"Dengarkan, lalu sentuh gambar yang benar.", levels:TAP_LEVELS, run:tapLevel},
+  {id:"toys", name:"Toy Stall", seller:"Bu Sinta's toys", em:"🧸", c:"var(--sea)", bands:"Band 1–2 · A1",
+   what:"Put toys on, under, in, behind… then read where they are.", en:"Listen. Tap a toy, then tap its place.", idn:"Dengarkan. Sentuh mainan, lalu sentuh tempatnya.", levels:TOY_LEVELS, run:toyLevel},
+  {id:"warung", name:"Bu Ani's Warung", seller:"Sell, count and shop", em:"🏪", c:"var(--leaf)", bands:"Band 1–2 · A1",
+   what:"Pack orders, say prices, answer questions, then be the customer.", en:"Help Bu Ani at the warung.", idn:"Bantu Bu Ani di warung.", levels:SHOP_LEVELS, run:shopLevel},
+  {id:"spell", name:"Letter Stall", seller:"Spell the market words", em:"🔤", c:"var(--ochre)", bands:"Band 2 · A1.2",
+   what:"Hear a word, spell it with letter tiles. Later, with no picture.", en:"Listen and spell the word.", idn:"Dengarkan kata, lalu susun hurufnya.", levels:SPELL_LEVELS, run:spellLevel},
+  {id:"story", name:"Story Mat", seller:"Ten stories from home and pasar", em:"📖", c:"var(--ink)", bands:"Band 3 · A2.1",
+   what:"Read a story, put it in order, answer why, choose the linker.", en:"Read. Put the story in order.", idn:"Baca cerita, lalu urutkan kalimatnya.", levels:STORY_LEVELS, run:storyLevel}
+];
+STALLS.forEach(st => st.levels.forEach((lv, i) => { lv.id = `${st.id}-${i + 1}`; lv.code = `${STALLS.indexOf(st) + 1}-${i + 1}`; lv.stall = st; lv.idx = i; }));
+const LEVEL = {}; STALLS.forEach(st => st.levels.forEach(lv => { LEVEL[lv.id] = lv; }));
+const TOTAL_LEVELS = Object.keys(LEVEL).length;
+
+/* ---------- State ---------- */
+function fresh(){ return {lv:{}, desc:{}, words:{}, srs:{}, turns:0, activeMs:0, days:{}, weeks:{}, last:{}, bahasa:true, goalMin:120, capMin:30, unlockAll:false}; }
+function loadStore(){ try{ const raw = localStorage.getItem(KEY); if (raw) return Object.assign(fresh(), JSON.parse(raw)); }catch(e){} return null; }
+let S = fresh();
+let saveFailed = false, saveWarned = false;
+const hotHost = () => !!(window.claude && window.claude.hot && window.claude.hot.snapshot);
+function warnSave(){
+  if (saveWarned || hotHost()) return;
+  saveWarned = true;
+  const b = document.getElementById("saveBanner"); if (b) b.hidden = false;
+}
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); saveFailed = false; }catch(e){ saveFailed = true; warnSave(); } }
+function storageWorks(){ try{ const k = KEY + "-probe"; localStorage.setItem(k, "1"); localStorage.removeItem(k); return true; }catch(e){ return false; } }
+const pad = n => String(n).padStart(2, "0");
+function dayKey(d){ d = d || new Date(); return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`; }
+function weekKey(d){ d = new Date(d || Date.now()); const wd = (d.getDay() + 6) % 7; d.setDate(d.getDate() - wd); return dayKey(d); }
+
+let RUN = null, item = null, timers = [], capShown = false, lockUntil = 0;
+const later = (fn, ms) => { const t = setTimeout(fn, ms); timers.push(t); return t; };
+const clearTimers = () => { timers.forEach(clearTimeout); timers = []; };
+const locked = () => Date.now() < lockUntil;
+const lockFor = ms => { lockUntil = Date.now() + ms; };
+
+/* ---------- Audio ---------- */
+let voice = null, lastSay = {text:"", band:0};
+const hasTTS = "speechSynthesis" in window;
+function pickVoice(){
+  try{
+    const vs = speechSynthesis.getVoices();
+    voice = vs.find(v => /en[-_]GB/i.test(v.lang) && /female|libby|sonia|serena|kate|google uk english female/i.test(v.name))
+         || vs.find(v => /en[-_]GB/i.test(v.lang)) || vs.find(v => /^en/i.test(v.lang)) || null;
+  }catch(e){ voice = null; }
+}
+if (hasTTS){ pickVoice(); try{ speechSynthesis.onvoiceschanged = pickVoice; }catch(e){} }
+function setCaption(text){
+  const c = $("#caption"); c.textContent = text;
+  if (!hasTTS) c.append(el("small", {}, "No English voice on this device. Read the words, or ask a grown-up to read them."));
+}
+function say(text, band){
+  lastSay = {text, band: band ?? (RUN ? RUN.band : 0)};
+  setCaption(text);
+  if (!hasTTS) return;
+  try{
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    if (voice){ u.voice = voice; u.lang = voice.lang; } else u.lang = "en-GB";
+    u.rate = RATE[lastSay.band] || 0.85; u.pitch = 1.05;
+    speechSynthesis.speak(u);
+  }catch(e){}
+}
+let actx = null;
+function tone(kind){
+  try{
+    actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+    const t = actx.currentTime;
+    const notes = kind === "good" ? [660, 880] : kind === "done" ? [523, 659, 784, 1046] : kind === "tick" ? [740] : [330, 294];
+    const vol = kind === "soft" ? 0.05 : 0.1;
+    notes.forEach((f, i) => {
+      const o = actx.createOscillator(), g = actx.createGain();
+      o.type = "sine"; o.frequency.value = f;
+      const s = t + i * 0.12;
+      g.gain.setValueAtTime(0.0001, s); g.gain.exponentialRampToValueAtTime(vol, s + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, s + 0.26);
+      o.connect(g); g.connect(actx.destination); o.start(s); o.stop(s + 0.3);
+    });
+  }catch(e){}
+}
+
+/* ---------- Evidence + spaced review ---------- */
+const PRAISE_FIRST = ["You listened carefully!", "Good thinking!", "Yes! Well done.", "You looked carefully!"];
+const PRAISE_RETRY = ["You kept trying. Yes!", "Great, you found it!", "You did it!"];
+const TRY = ["Not yet. Listen again.", "Almost! Try another one.", "Good try. Look and listen once more."];
+const INTERVAL = [1, 1, 3, 7, 14, 30];
+
+function newItem(descs, words, srsIds){
+  item = {descs, wrong:0, hints:0, done:false, srs: srsIds || []};
+  (words || []).forEach(w => { S.words[w] = (S.words[w] || 0) + 1; });
+}
+function srsUpdate(id, first, review){
+  const now = Date.now();
+  let s = S.srs[id];
+  if (review && s){ s.box = first ? Math.min(s.box + 1, 5) : 1; s.due = now + INTERVAL[s.box] * DAY; return; }
+  if (!s){ S.srs[id] = {box: first ? 1 : 0, due: now + DAY, spell:false}; s = S.srs[id]; }
+  else if (!first){ s.box = Math.min(s.box, 1); s.due = Math.min(s.due, now + DAY); }
+  if (RUN && RUN.stallId === "spell") s.spell = true;
+}
+function finishItem(output){
+  if (!item || item.done) return;
+  item.done = true;
+  const first = item.wrong === 0 && item.hints === 0;
+  item.descs.forEach(d => {
+    const s = S.desc[d] || (S.desc[d] = {items:0, first:0, hints:0, stalls:[], days:[]});
+    s.items++; if (first) s.first++; s.hints += item.hints;
+    if (RUN && RUN.stallId && !s.stalls.includes(RUN.stallId)) s.stalls.push(RUN.stallId);
+    const dk = dayKey(); if (first && !s.days.includes(dk)) s.days.push(dk);
+  });
+  item.srs.forEach(id => srsUpdate(id, first, RUN && RUN.review));
+  if (output) S.turns++;
+  RUN.items++; if (first) RUN.first++;
+  save(); renderShields();
+}
+function setFeedback(text, kind){ const f = $("#feedback"); f.textContent = text; f.className = "feedback" + (kind === "try" ? " try" : ""); }
+function miss(btn, lockMs){
+  item.wrong++;
+  tone("soft");
+  lockFor(lockMs == null ? 1400 : lockMs);
+  if (btn){ btn.classList.remove("wobble"); void btn.offsetWidth; btn.classList.add("wobble"); }
+  setFeedback(pick(TRY), "try");
+}
+function win(text, opts){
+  opts = opts || {};
+  tone("good");
+  setFeedback(pick(item.wrong || item.hints ? PRAISE_RETRY : PRAISE_FIRST));
+  say(text);
+  finishItem(opts.output);
+  later(opts.next || nextRound, opts.delay || 1500);
+}
+function dueIds(){ const now = Date.now(); return Object.keys(S.srs).filter(id => LEX[id] && S.srs[id].due <= now); }
+
+/* ---------- Progress, unlocks, time ---------- */
+const lvState = id => S.lv[id] || {stars:0, plays:0, goldDays:[]};
+const isGold = id => new Set(lvState(id).goldDays).size >= 2;
+const starsOf = id => lvState(id).stars;
+function stallUnlocked(st){
+  const i = STALLS.indexOf(st);
+  if (i === 0 || S.unlockAll) return true;
+  const prev = STALLS[i - 1];
+  return prev.levels.filter(l => starsOf(l.id) >= 2).length >= 3;
+}
+function levelUnlocked(lv){
+  if (!stallUnlocked(lv.stall)) return false;
+  if (S.unlockAll || lv.idx === 0) return true;
+  return starsOf(lv.stall.levels[lv.idx - 1].id) >= 2;
+}
+function nextLevelIn(st){
+  if (!stallUnlocked(st)) return null;
+  return st.levels.find(l => levelUnlocked(l) && starsOf(l.id) < 2)
+      || st.levels.find(l => levelUnlocked(l) && starsOf(l.id) < 3)
+      || st.levels.find(l => levelUnlocked(l) && !isGold(l.id)) || null;
+}
+function recommended(){
+  const cands = STALLS.map(nextLevelIn).filter(Boolean);
+  if (!cands.length) return null;
+  cands.sort((a, b) => (S.last[a.stall.id] || 0) - (S.last[b.stall.id] || 0));
+  return cands[0];
+}
+function liveMs(){ return RUN && RUN.t0 ? Date.now() - RUN.t0 : 0; }
+function stopClock(){
+  if (!RUN || !RUN.t0) return;
+  const d = Date.now() - RUN.t0; RUN.t0 = 0;
+  S.activeMs += d;
+  const dk = dayKey(), wk = weekKey();
+  S.days[dk] = (S.days[dk] || 0) + d; S.weeks[wk] = (S.weeks[wk] || 0) + d;
+  save();
+}
+const mins = ms => Math.round(ms / 60000);
+
+/* ---------- Shields ---------- */
+function renderShields(){
+  const box = $("#shields"); box.innerHTML = "";
+  SKILLS.forEach(sk => {
+    let score = 0;
+    for (const [d, s] of Object.entries(S.desc)) if (DESC[d] && DESC[d].skill === sk.k) score += s.first;
+    const sh = Math.min(5, Math.floor(score / 12));
+    const pips = el("div", {class:"pips", "aria-hidden":"true"});
+    for (let i = 0; i < 5; i++) pips.append(el("i", {class: i < sh ? "on" : ""}));
+    box.append(el("div", {class:"shield"},
+      el("div", {class:"badge", style:`background:${sk.c}`, "aria-hidden":"true"}, String(sh)),
+      el("div", {}, el("div", {class:"name"}, sk.k, el("span", {class:"sr"}, `: ${sh} of 5 shields`)), pips)));
+  });
+}
+
+/* ---------- Views ---------- */
+function showView(which){
+  $("#mapView").hidden = which !== "map";
+  $("#stallView").hidden = which !== "stall";
+  $("#stage").hidden = which !== "stage";
+  document.body.dataset.view = which;
+  window.scrollTo({top:0, behavior:"auto"});
+}
+function starEl(n, size){
+  const s = el("span", {class:"stars", role:"img", "aria-label": `${n} of 3 stars`, style: size ? `font-size:${size}px` : null});
+  for (let i = 0; i < 3; i++) s.append(i < n ? "★" : el("span", {class:"off"}, "☆"));
+  return s;
+}
+function renderToday(){
+  const box = $("#today"); box.innerHTML = "";
+  const wk = (S.weeks[weekKey()] || 0) + liveMs();
+  const td = (S.days[dayKey()] || 0);
+  const goal = S.goalMin;
+  const pct = Math.min(100, Math.round(mins(wk) / goal * 100));
+  const due = dueIds().length;
+  const rec = recommended();
+  const planBits = [];
+  if (due >= 3) planBits.push(`Review cart: ${Math.min(due, 10)} words`);
+  if (rec) planBits.push(`${rec.stall.name} ${rec.code} · ${rec.title}`);
+  box.append(
+    el("div", {},
+      el("h2", {}, "This week at the market"),
+      el("p", {class:"sub"}, `Goal ${goal} min a week · about ${Math.round(goal / 4)} min a day, 4 days a week`),
+      el("div", {class:"bar", role:"progressbar", "aria-label":"Minutes played this week", "aria-valuemin":"0", "aria-valuemax": String(goal), "aria-valuenow": String(mins(wk))}, el("i", {style:`width:${pct}%`})),
+      el("div", {class:"nums"},
+        el("span", {}, el("b", {}, `${mins(wk)}`), ` of ${goal} min this week`),
+        el("span", {}, el("b", {}, `${mins(td)}`), " min today"),
+        el("span", {}, el("b", {}, `${Object.keys(S.lv).filter(id => starsOf(id) >= 2).length}`), ` of ${TOTAL_LEVELS} sub-levels passed`),
+        el("span", {}, el("b", {}, `${due}`), " words to review"))),
+    el("div", {class:"go"},
+      el("p", {class:"plan"}, planBits.length ? `Today's trip: ${planBits.join(" → ")}` : "Everything is done for now. Come back tomorrow for review!"),
+      el("button", {class:"big", onclick: startTrip, disabled: planBits.length ? null : "disabled"}, "Start today's trip →")));
+}
+function renderMap(){
+  renderToday();
+  const box = $("#stalls"); box.innerHTML = "";
+  const rec = recommended();
+  STALLS.forEach((st, i) => {
+    const unlocked = stallUnlocked(st);
+    const passed = st.levels.filter(l => starsOf(l.id) >= 2).length;
+    const golds = st.levels.filter(l => isGold(l.id)).length;
+    const prev = STALLS[i - 1];
+    box.append(el("article", {class:"stall" + (unlocked ? "" : " locked"), style:`--c:${st.c}`},
+      el("div", {class:"mini", "aria-hidden":"true"}),
+      rec && rec.stall === st ? el("span", {class:"next-badge"}, "Next for you") : null,
+      el("div", {class:"body"},
+        el("div", {class:"em", "aria-hidden":"true"}, st.em),
+        el("h3", {}, st.name),
+        el("p", {class:"seller"}, st.seller),
+        el("div", {class:"chips"}, el("span", {class:"chip"}, st.bands)),
+        el("p", {class:"what"}, st.what),
+        el("div", {class:"prog"}, `${passed} of ${st.levels.length} sub-levels passed · ${golds} gold`),
+        el("div", {class:"pbar"}, el("i", {style:`width:${Math.round(passed / st.levels.length * 100)}%`})),
+        el("div", {class:"foot"},
+          unlocked ? el("span", {class:"lockmsg"}, "") : el("span", {class:"lockmsg"}, `🔒 Pass 3 sub-levels in ${prev.name}`),
+          el("button", {class:"play-btn", disabled: unlocked ? null : "disabled", onclick: () => openStallPage(st.id)}, unlocked ? "Open" : "Locked")))));
+  });
+}
+function openStallPage(id){
+  const st = STALLS.find(s => s.id === id);
+  clearTimers(); stopClock();
+  RUN = null; item = null;
+  const v = $("#stallView"); v.innerHTML = "";
+  const nxt = nextLevelIn(st);
+  const grid = el("div", {class:"levels"});
+  st.levels.forEach(lv => {
+    const un = levelUnlocked(lv), stars = starsOf(lv.id);
+    grid.append(el("button", {class:"lvl" + (nxt === lv ? " cur" : "") + (stars >= 2 ? " done" : ""), disabled: un ? null : "disabled", onclick: () => openLevel(lv.id),
+        "aria-label": `${lv.code} ${lv.title}${nxt === lv ? ", next" : ""}${un ? "" : ", locked"}, ${stars} stars${isGold(lv.id) ? ", gold" : ""}`},
+      isGold(lv.id) ? el("span", {class:"medal", "aria-hidden":"true"}, "🏅") : (!un ? el("span", {class:"medal", "aria-hidden":"true"}, "🔒") : nxt === lv ? el("span", {class:"nexttag", "aria-hidden":"true"}, "Next") : null),
+      el("span", {class:"code"}, lv.code),
+      el("span", {class:"ttl"}, lv.title),
+      el("span", {class:"bd"}, `${BANDS[lv.band]} · ${lv.descs.join(", ")}`),
+      starEl(stars, 16)));
+  });
+  v.append(
+    el("div", {class:"stall-top"},
+      el("div", {class:"t"}, el("span", {class:"em", "aria-hidden":"true"}, st.em), el("div", {}, el("h2", {}, st.name), el("p", {}, `${st.bands} · ${st.levels.length} sub-levels`))),
+      el("div", {class:"row", style:"margin:0"},
+        el("button", {class:"ghost", onclick: () => { renderMap(); showView("map"); }}, "← Market map"),
+        nxt ? el("button", {class:"primary", onclick: () => openLevel(nxt.id)}, `Continue ${nxt.code}`) : null)),
+    grid,
+    el("p", {class:"legend"}, "★★ opens the next sub-level. ★★★ means 85% right on the first try. 🏅 gold = ★★★ on two different days, which shows the words have stuck."));
+  showView("stall");
+}
+
+/* ---------- Stage ---------- */
+function renderInstr(){
+  if (!RUN) return;
+  $("#instrEn").textContent = RUN.en;
+  const idLine = $("#instrId"), btn = $("#showId");
+  idLine.textContent = RUN.idn;
+  if (!S.bahasa){ idLine.hidden = true; btn.hidden = true; }
+  else if (RUN.band <= 1){ idLine.hidden = false; btn.hidden = true; }
+  else { idLine.hidden = !RUN.showId; btn.hidden = !!RUN.showId; }
+}
+function renderDots(){
+  const d = $("#dots"); d.innerHTML = "";
+  for (let i = 1; i <= RUN.total; i++) d.append(el("i", {class: i < RUN.round ? "done" : i === RUN.round ? "now" : ""}));
+  $("#roundTxt").textContent = `Round ${Math.min(RUN.round, RUN.total)} of ${RUN.total}`;
+}
+function beginRun(cfg){
+  clearTimers();
+  RUN = Object.assign({round:0, total:1, items:0, first:0, t0:Date.now(), showId:false, roundFn:null, hintFn:null}, cfg);
+  $("#stEmoji").textContent = RUN.em;
+  $("#stName").textContent = RUN.name;
+  $("#stBand").textContent = RUN.bandLabel;
+  $("#promptBar").hidden = false;
+  renderInstr(); setFeedback(""); showView("stage");
+}
+function openLevel(id){
+  const lv = LEVEL[id], st = lv.stall;
+  beginRun({levelId:id, stallId:st.id, review:false, band:lv.band, em:st.em, name:`${st.name} ${lv.code}: ${lv.title}`, bandLabel:BANDS[lv.band], en:st.en, idn:st.idn});
+  S.last[st.id] = Date.now();
+  st.run(lv);
+  nextRound();
+}
+function leaveStage(){
+  clearTimers(); stopClock();
+  try{ if (hasTTS) speechSynthesis.cancel(); }catch(e){}
+  const st = RUN && RUN.stallId;
+  RUN = null; item = null;
+  if (st && st !== "review") openStallPage(st); else { renderMap(); showView("map"); }
+}
+function nextRound(){
+  RUN.round++;
+  setFeedback("");
+  if (RUN.round > RUN.total) return finishRun();
+  renderDots();
+  lockFor(500);
+  RUN.roundFn(RUN.round);
+}
+function finishRun(){
+  stopClock();
+  const rate = RUN.items ? RUN.first / RUN.items : 0;
+  const stars = rate >= 0.85 ? 3 : rate >= 0.6 ? 2 : 1;
+  tone("done"); renderDots();
+  $("#promptBar").hidden = true;
+  const play = $("#play"); play.innerHTML = "";
+  const nextBtns = [];
+  let goldNote = null, title = "Sub-level complete!";
+  if (RUN.review){
+    title = "Review cart done!";
+  } else {
+    const p = S.lv[RUN.levelId] || (S.lv[RUN.levelId] = {stars:0, plays:0, goldDays:[]});
+    const wasGold = isGold(RUN.levelId);
+    p.plays++; p.stars = Math.max(p.stars, stars);
+    if (stars === 3 && !p.goldDays.includes(dayKey())) p.goldDays.push(dayKey());
+    if (!wasGold && isGold(RUN.levelId)) goldNote = "🏅 Gold medal! Three stars on two different days.";
+    else if (stars === 3 && !isGold(RUN.levelId)) goldNote = "Three stars! Play this again on another day to win a gold medal.";
+    else if (stars < 2) goldNote = "Two stars open the next sub-level. Try again: you are learning!";
+  }
+  save();
+  const rec = recommended();
+  const due = dueIds().length;
+  if (!RUN.review && due >= 3) nextBtns.push(el("button", {class:"primary", onclick: startReview}, `Review ${Math.min(due, 10)} words`));
+  if (rec) nextBtns.push(el("button", {class: nextBtns.length ? "ghost" : "primary", onclick: () => openLevel(rec.id)}, `Next: ${rec.stall.name} ${rec.code}`));
+  if (!RUN.review) nextBtns.push(el("button", {class:"ghost", onclick: () => openLevel(RUN.levelId)}, "Play again"));
+  nextBtns.push(el("button", {class:"ghost", onclick: leaveStage}, RUN.review ? "Market map" : "Back to stall"));
+  play.append(el("div", {class:"end"},
+    el("h3", {}, title),
+    starEl(stars),
+    el("p", {}, `${RUN.first} of ${RUN.items} right on the first try. Every try helps you learn.`),
+    goldNote ? el("p", {class:"gold"}, goldNote) : null,
+    el("p", {class:"note"}, `${mins(S.weeks[weekKey()] || 0)} of ${S.goalMin} minutes this week.`),
+    el("div", {class:"row"}, nextBtns)));
+  say(stars === 3 ? "Fantastic! Well done!" : "Well done! Good work!");
+}
+function startTrip(){
+  if (dueIds().length >= 3) return startReview();
+  const rec = recommended(); if (rec) openLevel(rec.id);
+}
+
+/* ---------- Mechanic: Listen & Tap ---------- */
+function tapLevel(lv){
+  let rounds;
+  if (lv.mode === "count"){
+    const nums = fill(Array.from({length: lv.range[1] - lv.range[0] + 1}, (_, i) => lv.range[0] + i), lv.rounds);
+    const things = fill(lv.cpool, lv.rounds);
+    rounds = nums.map((n, i) => ({count:n, it: LEX[things[i]]}));
+  } else {
+    rounds = fill(lv.pool, lv.rounds).map(id => ({it: LEX[id]}));
+  }
+  RUN.total = rounds.length;
+  RUN.roundFn = r => {
+    const rd = rounds[r - 1];
+    if (rd.count) countRound(rd.it, rd.count, lv);
+    else tapRound(rd.it, lv.pool, lv.opts, lv.mode === "numeral");
+  };
+}
+function distractors(it, pool, k, numeral){
+  if (numeral){
+    const n = it.num, near = [n - 10, n + 1, n - 1, n + 2, n - 2].filter(v => v >= 1 && v <= 20 && v !== n);
+    return shuffle(near).slice(0, k).map(v => LEX["n" + v]);
+  }
+  let same = pool.filter(id => id !== it.id && LEX[id].w !== it.w);
+  if (pool.length > 30){ same = same.filter(id => LEX[id].t === it.t); if (same.length < k) same = pool.filter(id => id !== it.id); }
+  return shuffle(same).slice(0, k).map(id => LEX[id]);
+}
+function choiceButton(content, label, key, onPick){
+  const b = el("button", {class:"choice", "aria-label": label, "data-key": key}, content);
+  b.addEventListener("click", () => { if (item.done || locked()) return; onPick(b); });
+  return b;
+}
+function tapRound(it, pool, opts, numeral){
+  const play = $("#play"); play.innerHTML = "";
+  const prompt = promptFor(it);
+  newItem(["L-P"], [it.w], [it.id]);
+  const options = shuffle([it].concat(distractors(it, pool, opts - 1, numeral)));
+  const grid = el("div", {class:"choice-grid"});
+  options.forEach(o => grid.append(choiceButton(showItem(o), o.w, o.id, b => {
+    if (o.id === it.id){ b.classList.add("right"); win(`Yes! ${cap(it.w)}.`); }
+    else { miss(b); say(`${thatIs(o)} ${prompt}`); }
+  })));
+  play.append(grid);
+  RUN.hintFn = () => { glow(grid.querySelector(`[data-key="${it.id}"]`)); say(prompt); };
+  say(prompt);
+}
+function frameOf(e, n){ const f = el("span", {class:"frame"}); for (let i = 0; i < n; i++) f.append(el("span", {}, e)); return f; }
+function countRound(it, n, lv){
+  const play = $("#play"); play.innerHTML = "";
+  const prompt = `Find ${NUM[n]} ${plural(it)}.`;
+  newItem(["L-P"], [it.w, NUM[n]], ["n" + n]);
+  const lo = lv.range[0], hi = lv.range[1];
+  const near = shuffle([n - 1, n + 1, n - 2, n + 2].filter(v => v >= Math.max(1, lo - 1) && v <= hi + 1 && v !== n)).slice(0, lv.opts - 1);
+  const grid = el("div", {class:"choice-grid"});
+  shuffle([n].concat(near)).forEach(v => grid.append(choiceButton(frameOf(it.e, v), `${NUM[v]} ${v === 1 ? it.w : plural(it)}`, String(v), b => {
+    if (v === n){ b.classList.add("right"); win(`Yes! ${cap(NUM[n])} ${plural(it)}.`); }
+    else { miss(b, 1800); say(`That is ${NUM[v]}. Let's count: ${NUM.slice(1, n + 1).join(", ")}. ${prompt}`); }
+  })));
+  play.append(grid);
+  RUN.hintFn = () => { glow(grid.querySelector(`[data-key="${n}"]`)); say(prompt); };
+  say(prompt);
+}
+
+/* ---------- Mechanic: Toy scenes ---------- */
+const SCENES = {
+  room:{cls:"", props:() => [
+      el("div", {class:"table", "aria-hidden":"true"}, el("div", {class:"top"}), el("div", {class:"leg l"}), el("div", {class:"leg r"})),
+      el("div", {class:"box", "aria-hidden":"true"})],
+    zones:{on:{p:"on the table", s:"left:10%;width:38%;top:16%;height:31%"}, under:{p:"under the table", s:"left:14%;width:30%;top:62%;height:26%"},
+           in:{p:"in the box", s:"left:61%;width:21%;top:36%;height:30%", z:4}, next:{p:"next to the box", s:"left:84%;width:15%;top:56%;height:32%"}}},
+  garden:{cls:"garden", props:() => [
+      el("div", {class:"tree", "aria-hidden":"true"}, "🌳"),
+      el("div", {class:"box", "aria-hidden":"true"})],
+    zones:{behind:{p:"behind the tree", s:"left:22%;width:24%;top:18%;height:36%", back:true}, front:{p:"in front of the tree", s:"left:8%;width:34%;top:62%;height:32%"},
+           in:{p:"in the box", s:"left:61%;width:21%;top:36%;height:30%", z:4}, next:{p:"next to the box", s:"left:84%;width:15%;top:56%;height:32%"}}}
+};
+function toyLevel(lv){
+  const rounds = [];
+  for (let i = 0; i < lv.rounds; i++){
+    const sceneId = lv.scene === "mix" ? (i % 2 ? "garden" : "room") : lv.scene;
+    const places = lv.places && lv.scene !== "mix" ? lv.places : Object.keys(SCENES[sceneId].zones);
+    const mode = lv.mode === "mix" ? (i % 3 === 2 ? "where" : "put") : (lv.mode || "put");
+    rounds.push({sceneId, place: null, places, mode});
+  }
+  const toys = fill(lv.toys, lv.rounds);
+  const placeSeq = {};
+  rounds.forEach((r, i) => {
+    const k = r.sceneId + r.places.join();
+    placeSeq[k] = placeSeq[k] || fill(r.places, lv.rounds);
+    r.place = placeSeq[k][i];
+    r.toy = LEX[toys[i]];
+    r.tray = shuffle([toys[i]].concat(shuffle(lv.toys.filter(t => t !== toys[i])).slice(0, Math.min(lv.toys.length - 1, 3)))).map(t => LEX[t]);
+  });
+  RUN.total = rounds.length;
+  RUN.roundFn = r => rounds[r - 1].mode === "where" ? whereRound(rounds[r - 1]) : putRound(rounds[r - 1]);
+}
+function buildScene(sceneId, places){
+  const sc = SCENES[sceneId];
+  const scene = el("div", {class:"scene " + sc.cls}, sc.props());
+  const zones = {};
+  places.forEach(pid => {
+    const z = sc.zones[pid];
+    const b = el("button", {class:"zone" + (z.back ? " back" : ""), "data-zone": pid, "aria-label": z.p, style: z.s + (z.z ? `;z-index:${z.z}` : "")}, el("span", {class:"sr"}, z.p));
+    zones[pid] = b; scene.append(b);
+  });
+  return {scene, zones, sc};
+}
+function putRound(rd){
+  const play = $("#play"); play.innerHTML = "";
+  const {scene, zones, sc} = buildScene(rd.sceneId, rd.places);
+  const target = sc.zones[rd.place];
+  const prompt = `Put the ${rd.toy.w} ${target.p}.`;
+  newItem(["L-A1"], [rd.toy.w], [rd.toy.id]);
+  let selected = null;
+  const tray = el("div", {class:"tray", role:"group", "aria-label":"Toys"});
+  const toyBtns = {};
+  function setSel(t){
+    selected = t;
+    Object.entries(toyBtns).forEach(([id, b]) => b.setAttribute("aria-pressed", t && t.id === id ? "true" : "false"));
+    scene.classList.toggle("armed", !!t);
+  }
+  rd.tray.forEach(t => {
+    const b = el("button", {class:"toy", "aria-label": t.w, "aria-pressed":"false"}, t.e);
+    b.addEventListener("click", () => { if (item.done || locked()) return; setSel(t); say(`The ${t.w}.`); });
+    toyBtns[t.id] = b; tray.append(b);
+  });
+  Object.entries(zones).forEach(([pid, z]) => z.addEventListener("click", () => {
+    if (item.done || locked()) return;
+    if (!selected){ setFeedback("First tap a toy.", "try"); say(`Tap the ${rd.toy.w}.`); return; }
+    z.textContent = selected.e;
+    if (selected.id === rd.toy.id && pid === rd.place){
+      z.classList.add("right"); toyBtns[selected.id].hidden = true;
+      win(`Yes! The ${rd.toy.w} is ${target.p}.`);
+    } else {
+      miss(z, 1700);
+      say(selected.id !== rd.toy.id ? `That is the ${selected.w}. ${prompt}` : `The ${rd.toy.w} is ${sc.zones[pid].p}. ${prompt}`);
+      later(() => { z.textContent = ""; z.append(el("span", {class:"sr"}, sc.zones[pid].p)); setSel(null); }, 1600);
+    }
+  }));
+  play.append(scene, tray);
+  RUN.hintFn = () => { glow(selected && selected.id === rd.toy.id ? zones[rd.place] : toyBtns[rd.toy.id]); say(prompt); };
+  say(prompt);
+}
+function whereRound(rd){
+  const play = $("#play"); play.innerHTML = "";
+  const {scene, zones, sc} = buildScene(rd.sceneId, rd.places);
+  zones[rd.place].textContent = rd.toy.e;
+  Object.values(zones).forEach(z => { z.disabled = true; });
+  const prompt = `Where is the ${rd.toy.w}?`;
+  newItem(["R-A1"], [rd.toy.w], [rd.toy.id]);
+  const right = `It's ${sc.zones[rd.place].p}.`;
+  const wrongs = shuffle(rd.places.filter(p => p !== rd.place)).slice(0, 2).map(p => `It's ${sc.zones[p].p}.`);
+  const box = el("div", {class:"options", style:"margin-top:14px"});
+  shuffle([right].concat(wrongs)).forEach(t => {
+    const b = el("button", {class:"opt say", "data-t": t}, t);
+    b.addEventListener("click", () => {
+      if (item.done || locked()) return;
+      if (t === right){ b.classList.add("right"); win(right, {output:true}); }
+      else { miss(b); say(`Look again. ${prompt}`); }
+    });
+    box.append(b);
+  });
+  play.append(scene, el("p", {class:"q", style:"margin-top:14px"}, prompt), box);
+  RUN.hintFn = () => { glow(zones[rd.place]); say(prompt); };
+  say(prompt);
+}
+
+/* ---------- Mechanic: Warung ---------- */
+const FACES = [["👵🏽","Nenek Sri"],["👦🏽","Dimas"],["👩🏽","Bu Rina"],["👨🏽","Pak Joko"],["👧🏽","Dina"],["👴🏽","Kakek Harun"],["🧕🏽","Bu Siti"],["👨🏽‍🦱","Mas Andi"]];
+const CLOSERS = [
+  {cust:"Here you are. Thank you!", right:"Thank you! Goodbye!", wrong:["I like swimming.", "Put the duck in the box."]},
+  {cust:"Thank you, Bu Ani!", right:"You're welcome! Goodbye!", wrong:["I am nine.", "It's a lemon."]},
+  {cust:"Here are the coins.", right:"Thank you! Goodbye!", wrong:["Good night!", "Find the apple."]},
+  {cust:"Thanks! See you tomorrow!", right:"See you! Goodbye!", wrong:["Under the table.", "I have got a cat."]}
+];
+const qty = (it, n) => n === 1 ? `${/^[aeiou]/.test(it.w) ? "an" : "a"} ${it.w}` : `${NUM[n]} ${plural(it)}`;
+const coinWord = n => n === 1 ? "one coin" : `${NUM[n]} coins`;
+function shopLevel(lv){
+  const custs = [];
+  const faces = fill(FACES, lv.customers);
+  for (let i = 0; i < lv.customers; i++){
+    const mode = lv.modes[i % lv.modes.length];
+    const it = LEX[pick(lv.items)];
+    const maxN = Math.min(lv.n[1], Math.floor(20 / PRICE[it.id]));
+    const c = {face: faces[i][0], name: faces[i][1], mode, lines:[{it, n: rint(Math.min(lv.n[0], maxN), maxN)}], closer: pick(CLOSERS)};
+    if (mode === "two"){
+      const it2 = LEX[pick(lv.items.filter(x => x !== it.id))];
+      c.lines = [{it, n: rint(1, 3)}, {it2, it: it2, n: 1 + Math.floor(Math.random() * 2)}];
+    }
+    if (mode === "havegot"){
+      const missing = ["pear","bread","milk","juice","orange","apple"].filter(x => !lv.items.includes(x));
+      c.askFor = Math.random() < 0.5 && missing.length ? LEX[pick(missing)] : it;
+    }
+    custs.push(c);
+  }
+  RUN.total = custs.length;
+  RUN.lv = lv;
+  RUN.roundFn = r => {
+    const c = custs[r - 1];
+    const steps = c.mode === "buy" ? [shopAsk, shopPay, shopClose]
+      : c.mode === "havegot" ? [shopHave, shopPack, shopPrice, shopClose] : [shopPack, shopPrice, shopClose];
+    let k = 0;
+    const go = () => { if (k >= steps.length) return nextRound(); const f = steps[k++]; setFeedback(""); lockFor(400); f(c, go); };
+    go();
+  };
+}
+function customerRow(c, text){ return el("div", {class:"customer"}, el("div", {class:"face", "aria-hidden":"true"}, c.face), el("div", {class:"bubble"}, el("small", {}, c.name), text)); }
+function orderText(c){
+  if (c.lines.length === 2) return `${cap(qty(c.lines[0].it, c.lines[0].n))} and ${qty(c.lines[1].it, c.lines[1].n)}, please.`;
+  return `Can I have ${qty(c.lines[0].it, c.lines[0].n)}, please?`;
+}
+const totalOf = c => c.lines.reduce((s, l) => s + l.n * PRICE[l.it.id], 0);
+function shopHave(c, next){
+  const play = $("#play"); play.innerHTML = "";
+  const it = c.askFor, has = RUN.lv.items.includes(it.id);
+  const prompt = `Have you got any ${plural(it)}?`;
+  newItem(["SI-A1"], [plural(it), "have got"], [it.id]);
+  const right = has ? "Yes, I have." : "Sorry, I haven't.";
+  const box = el("div", {class:"options"});
+  shuffle(["Yes, I have.", "Sorry, I haven't.", "I'm seven."]).forEach(t => {
+    const b = el("button", {class:"opt say", "data-t": t}, t);
+    b.addEventListener("click", () => {
+      if (item.done || locked()) return;
+      if (t === right){ b.classList.add("right"); win(right, {output:true, delay:1500, next}); }
+      else { miss(b); say(`Look at the shelf. ${prompt}`); }
+    });
+    box.append(b);
+  });
+  play.append(el("div", {class:"shop"}, customerRow(c, prompt), shelfView(null), el("p", {class:"q"}, "What do you say?"), box));
+  RUN.hintFn = () => { glow(box.querySelector(`[data-t="${CSS.escape(right)}"]`)); say(prompt); };
+  say(prompt);
+}
+function shelfView(onAdd, map){
+  const shelf = el("div", {class:"shelf", role:"group", "aria-label":"Shelf"});
+  RUN.lv.items.forEach(id => {
+    const g = LEX[id];
+    const b = el("button", {class:"goods", "aria-label": `${g.w}, ${coinWord(PRICE[id])}`, disabled: onAdd ? null : "disabled"},
+      el("span", {class:"e", "aria-hidden":"true"}, g.e), el("span", {class:"price"}, `${PRICE[id]} 🪙`));
+    if (onAdd) b.addEventListener("click", () => onAdd(g));
+    if (map) map[id] = b;
+    shelf.append(b);
+  });
+  return shelf;
+}
+function shopPack(c, next){
+  const play = $("#play"); play.innerHTML = "";
+  const prompt = (c.mode === "havegot" && c.askFor.id !== c.lines[0].it.id) ? `OK. ${orderText(c)}` : orderText(c);
+  newItem(["L-A1"], c.lines.flatMap(l => [l.it.w, NUM[l.n]]), c.lines.map(l => l.it.id));
+  let bag = [];
+  const bagBox = el("div", {class:"bag", role:"group", "aria-label":"Shopping bag"});
+  const give = el("button", {class:"primary", disabled:"disabled"}, "Give the bag");
+  function drawBag(){
+    bagBox.innerHTML = "";
+    bagBox.append(el("span", {class:"lbl"}, bag.length ? `In the bag: ${bag.length}. Tap one to take it out.` : "The bag is empty. Tap the shelf to add."));
+    bag.forEach((g, i) => bagBox.append(el("button", {"aria-label": `Take out ${g.w}`, onclick: () => { if (item.done) return; bag.splice(i, 1); drawBag(); }}, g.e)));
+    if (bag.length) give.removeAttribute("disabled"); else give.setAttribute("disabled", "disabled");
+  }
+  const btns = {};
+  const shelf = shelfView(g => { if (item.done || locked() || bag.length >= 12) return; bag.push(g); tone("tick"); drawBag(); }, btns);
+  give.addEventListener("click", () => {
+    if (item.done || locked()) return;
+    const ok = c.lines.every(l => bag.filter(g => g.id === l.it.id).length === l.n) && bag.length === c.lines.reduce((s, l) => s + l.n, 0);
+    if (ok) win(`Here you are. ${cap(c.lines.map(l => qty(l.it, l.n)).join(" and "))}.`, {output:true, delay:1700, next});
+    else {
+      miss(give, 1800);
+      const extra = bag.find(g => !c.lines.some(l => l.it.id === g.id));
+      say(extra ? `Not ${plural(extra)}. ${orderText(c)}` : `Let's check. ${cap(c.lines.map(l => qty(l.it, l.n)).join(" and "))}, please.`);
+      later(() => { bag = []; drawBag(); }, 1300);
+    }
+  });
+  drawBag();
+  play.append(el("div", {class:"shop"}, customerRow(c, prompt), shelf, el("div", {class:"bagrow"}, bagBox, give)));
+  RUN.hintFn = () => { c.lines.forEach(l => glow(btns[l.it.id])); say(`${cap(c.lines.map(l => qty(l.it, l.n)).join(" and "))}. Count: ${NUM.slice(1, c.lines[0].n + 1).join(", ")}.`); };
+  say(prompt);
+}
+function shopPrice(c, next){
+  const play = $("#play"); play.innerHTML = "";
+  const total = totalOf(c);
+  const prompt = "How much is it?";
+  newItem(["M-A1"], ["coins", NUM[total]], ["n" + total]);
+  const pool = [total + 1, total - 1, total + 2, total - 2, c.lines[0].n].filter(v => v > 0 && v !== total && v <= 20);
+  const opts = shuffle([total].concat(shuffle(Array.from(new Set(pool))).slice(0, 2)));
+  const tags = el("div", {class:"shelf"}, c.lines.map(l => el("div", {class:"goods"}, el("span", {class:"e", "aria-hidden":"true"}, l.it.e), el("span", {class:"price"}, `${l.n} × ${PRICE[l.it.id]} 🪙`))));
+  const box = el("div", {class:"options"});
+  opts.forEach(v => {
+    const b = el("button", {class:"opt", "data-v": String(v)}, `${v} ${v === 1 ? "coin" : "coins"}`, el("span", {class:"coins", "aria-hidden":"true"}, "🪙".repeat(v)));
+    b.addEventListener("click", () => {
+      if (item.done || locked()) return;
+      if (v === total){ b.classList.add("right"); win(`That's ${coinWord(total)}.`, {output:true, delay:1700, next}); }
+      else {
+        miss(b, 2000);
+        const l = c.lines[0];
+        if (item.wrong < 2) say(`One ${l.it.w} is ${coinWord(PRICE[l.it.id])}. Count again.`);
+        else if (c.lines.length === 1){ const steps = []; for (let i = 1; i <= l.n; i++) steps.push(NUM[i * PRICE[l.it.id]]); say(`Let's count: ${steps.join(", ")}. ${cap(NUM[total])} coins.`); }
+        else say(`${cap(NUM[c.lines[0].n * PRICE[c.lines[0].it.id]])} and ${NUM[c.lines[1].n * PRICE[c.lines[1].it.id]]}. That's ${NUM[total]}.`);
+      }
+    });
+    box.append(b);
+  });
+  play.append(el("div", {class:"shop"}, customerRow(c, prompt), tags, box));
+  RUN.hintFn = () => { glow(box.querySelector(`[data-v="${total}"]`)); say(`One ${c.lines[0].it.w} is ${coinWord(PRICE[c.lines[0].it.id])}.`); };
+  say(prompt);
+}
+function shopClose(c, next){
+  const play = $("#play"); play.innerHTML = "";
+  const cl = c.closer;
+  const custLine = c.mode === "buy" ? "Thank you! Here are your things." : cl.cust;
+  const right = c.mode === "buy" ? "Thank you! Goodbye!" : cl.right;
+  const wrongs = c.mode === "buy" ? ["I'm a mango.", "Put the car on the table."] : cl.wrong;
+  newItem(["SI-A1"], ["thank you", "goodbye"], []);
+  const box = el("div", {class:"options"});
+  shuffle([right].concat(wrongs)).forEach(t => {
+    const b = el("button", {class:"opt say", "data-t": t}, t);
+    b.addEventListener("click", () => {
+      if (item.done || locked()) return;
+      if (t === right){ b.classList.add("right"); win(right, {output:true, delay:1800, next}); }
+      else { miss(b); say(`We can say: ${right}`); }
+    });
+    box.append(b);
+  });
+  const who = c.mode === "buy" ? {face:"👩🏽‍🍳", name:"Bu Ani"} : c;
+  play.append(el("div", {class:"shop"}, customerRow(who, custLine), el("p", {class:"q"}, "What do you say?"), box));
+  RUN.hintFn = () => { glow(box.querySelector(`[data-t="${CSS.escape(right)}"]`)); say(custLine); };
+  say(custLine);
+}
+function shopAsk(c, next){
+  const play = $("#play"); play.innerHTML = "";
+  const l = c.lines[0];
+  const prompt = "Hello! What would you like?";
+  newItem(["SI-A1","R-A1"], [l.it.w, NUM[l.n]], [l.it.id]);
+  const right = `Can I have ${qty(l.it, l.n)}, please?`;
+  const otherIt = LEX[pick(RUN.lv.items.filter(x => x !== l.it.id))];
+  const otherN = l.n > 2 ? l.n - 1 : l.n + 1;
+  const wrongs = [`Can I have ${qty(l.it, otherN)}, please?`, `Can I have ${qty(otherIt, l.n)}, please?`];
+  const box = el("div", {class:"options"});
+  shuffle([right].concat(wrongs)).forEach(t => {
+    const b = el("button", {class:"opt say", "data-t": t}, t);
+    b.addEventListener("click", () => {
+      if (item.done || locked()) return;
+      if (t === right){ b.classList.add("right"); win(right, {output:true, delay:1800, next}); }
+      else { miss(b); say(`Look at your list. ${prompt}`); }
+    });
+    box.append(b);
+  });
+  play.append(el("div", {class:"shop"},
+    customerRow({face:"👩🏽‍🍳", name:"Bu Ani"}, prompt),
+    el("div", {class:"list"}, el("small", {}, "Your shopping list"), el("span", {"aria-hidden":"true"}, l.it.e.repeat(l.n)), el("span", {class:"sr"}, qty(l.it, l.n))),
+    el("p", {class:"q"}, "What do you say?"), box));
+  RUN.hintFn = () => { glow(box.querySelector(`[data-t="${CSS.escape(right)}"]`)); say(`${cap(qty(l.it, l.n))}.`); };
+  say(prompt);
+}
+function shopPay(c, next){
+  const play = $("#play"); play.innerHTML = "";
+  const total = totalOf(c);
+  const prompt = `That's ${coinWord(total)}, please.`;
+  newItem(["L-A1"], ["coins", NUM[total]], ["n" + total]);
+  let paid = 0;
+  const tray = el("div", {class:"bag", role:"group", "aria-label":"Coins on the counter"});
+  const pay = el("button", {class:"primary", disabled:"disabled"}, "Pay");
+  function draw(){
+    tray.innerHTML = "";
+    tray.append(el("span", {class:"lbl"}, paid ? `On the counter: ${paid}. Tap a coin to take it back.` : "Tap your coins to put them on the counter."));
+    for (let i = 0; i < paid; i++) tray.append(el("button", {"aria-label":"Take back a coin", onclick: () => { if (item.done) return; paid--; draw(); }}, "🪙"));
+    if (paid) pay.removeAttribute("disabled"); else pay.setAttribute("disabled", "disabled");
+  }
+  const purse = el("div", {class:"row", style:"justify-content:flex-start"},
+    el("button", {class:"coinbtn", "aria-label":"Add one coin", onclick: () => { if (item.done || locked() || paid >= 20) return; paid++; tone("tick"); draw(); }}, "🪙"),
+    el("span", {class:"note", style:"margin:0"}, "Your purse"));
+  pay.addEventListener("click", () => {
+    if (item.done || locked()) return;
+    if (paid === total) win(`Here you are. ${cap(coinWord(total))}.`, {output:true, delay:1700, next});
+    else { miss(pay, 1800); say(paid > total ? `That's too many. ${prompt}` : `That's not enough. ${prompt}`); later(() => { paid = 0; draw(); }, 1300); }
+  });
+  draw();
+  play.append(el("div", {class:"shop"}, customerRow({face:"👩🏽‍🍳", name:"Bu Ani"}, prompt), purse, el("div", {class:"bagrow"}, tray, pay)));
+  RUN.hintFn = () => { glow(purse.querySelector(".coinbtn")); say(`${cap(NUM[total])} coins. Count: ${NUM.slice(1, total + 1).join(", ")}.`); };
+  say(prompt);
+}
+
+/* ---------- Mechanic: Spelling ---------- */
+function spellLevel(lv){
+  const rounds = fill(lv.words, lv.rounds || Math.min(lv.words.length, 8)).map(id => LEX[id]);
+  RUN.total = rounds.length;
+  RUN.roundFn = r => spellRound(rounds[r - 1], lv.spare, lv.nopic);
+}
+function spellRound(it, spare, nopic){
+  const play = $("#play"); play.innerHTML = "";
+  const w = it.w.toLowerCase();
+  const prompt = `${cap(w)}. Spell ${w}.`;
+  newItem(["W-A1"], [w], [it.id]);
+  let idx = 0;
+  const blanks = el("div", {class:"blanks", role:"group", "aria-label": `${w.length} letters`});
+  for (let i = 0; i < w.length; i++) blanks.append(el("div", {class:"blank"}, ""));
+  const spareLetters = shuffle("abdeghiklmnoprstuy".split("").filter(ch => !w.includes(ch))).slice(0, spare);
+  const tiles = el("div", {class:"tiles"});
+  shuffle(w.split("").concat(spareLetters)).forEach(ch => {
+    const t = el("button", {class:"tile", "data-ch": ch, "aria-label": `letter ${ch}`}, ch);
+    t.addEventListener("click", () => {
+      if (item.done || locked()) return;
+      if (ch === w[idx]){
+        blanks.children[idx].textContent = ch; t.disabled = true; idx++; tone("tick");
+        if (idx === w.length) win(`Yes! ${w.split("").join(", ")}. ${cap(w)}.`, {output:true, delay:1900});
+      } else { miss(t, 900); say(item.wrong < 2 ? `Listen again: ${w}.` : `Listen: ${w.split("").join(", ")}.`); }
+    });
+    tiles.append(t);
+  });
+  const pic = nopic ? el("div", {class:"pic", "aria-hidden":"true"}, "🔊") : el("div", {class:"pic", "aria-hidden":"true"}, it.sw ? el("span", {class:"swatch", style:`background:${it.sw}`}) : it.num ? el("span", {class:"numeral"}, String(it.num)) : it.e);
+  play.append(el("div", {class:"spell"}, pic, blanks, tiles));
+  RUN.hintFn = () => { glow(Array.from(tiles.children).find(b => !b.disabled && b.dataset.ch === w[idx])); say(`${cap(w)}. ${w.split("").join(", ")}.`); };
+  say(prompt);
+}
+
+/* ---------- Mechanic: Story ---------- */
+function storyLevel(lv){
+  const s = lv.story;
+  const qs = s.qs.map(q => ({q:q[0], right:q[1], wrong:q[2], d:["R-A2"]}));
+  qs.push({q:s.link[0], right:s.link[1], wrong:s.link[2], d:["W-A2"], full:s.link[0].replace("___", s.link[1])});
+  RUN.total = 1 + qs.length;
+  RUN.roundFn = r => r === 1 ? storyOrder(s) : storyQuestion(s, qs[r - 2]);
+}
+function storyOrder(s){
+  const play = $("#play"); play.innerHTML = "";
+  const P = s.panels, N = P.length;
+  newItem(["R-A2"], ["then", "because", "but"], []);
+  const slots = P.map(() => null), lockedS = P.map(() => false);
+  const panels = el("div", {class:"panels"});
+  const slotBtns = [];
+  P.forEach((p, i) => {
+    const sb = el("button", {class:"slot", "aria-label": `Sentence for picture ${i + 1}`}, "");
+    sb.addEventListener("click", () => { if (item.done || lockedS[i] || slots[i] == null) return; slots[i] = null; draw(); });
+    slotBtns.push(sb);
+    panels.append(el("div", {class:"spanel"}, el("span", {class:"num"}, `Picture ${i + 1}`), el("div", {class:"scene-e", "aria-hidden":"true"}, p[0]), sb));
+  });
+  const cards = el("div", {class:"cards", role:"group", "aria-label":"Sentence cards"});
+  const cardBtns = {};
+  shuffle(P.map((_, i) => i)).forEach(k => {
+    const c = el("button", {class:"card", "data-k": String(k)}, P[k][1]);
+    c.addEventListener("click", () => { if (item.done) return; const free = slots.findIndex((v, i) => v == null && !lockedS[i]); if (free < 0) return; slots[free] = k; draw(); });
+    cardBtns[k] = c; cards.append(c);
+  });
+  const check = el("button", {class:"primary", disabled:"disabled"}, "Check my story");
+  const readMine = el("button", {class:"ghost"}, "🔊 Read my story");
+  readMine.addEventListener("click", () => { const t = slots.filter(v => v != null).map(k => P[k][1]).join(" "); say(t || "Put a sentence card under a picture first."); });
+  check.addEventListener("click", () => {
+    if (item.done || locked()) return;
+    let bad = 0;
+    slots.forEach((k, i) => { if (k === i) lockedS[i] = true; else { bad++; slots[i] = null; } });
+    if (!bad){ draw(); win(P.map(p => p[1]).join(" "), {delay:3000}); }
+    else { miss(check, 600); const msg = `${N - bad} of ${N} are right. Look at the pictures again.`; setFeedback(msg, "try"); say(msg); draw(); }
+  });
+  function draw(){
+    slotBtns.forEach((sb, i) => {
+      sb.classList.toggle("filled", slots[i] != null); sb.classList.toggle("locked", lockedS[i]);
+      sb.textContent = slots[i] != null ? P[slots[i]][1] : "Tap a sentence card to put it here.";
+    });
+    Object.entries(cardBtns).forEach(([k, c]) => { c.hidden = slots.includes(Number(k)); });
+    if (slots.every(v => v != null)) check.removeAttribute("disabled"); else check.setAttribute("disabled", "disabled");
+  }
+  draw();
+  play.append(el("p", {class:"q"}, s.title), panels, cards, el("div", {class:"row"}, check, readMine));
+  RUN.hintFn = () => {
+    const i = slots.findIndex((v, j) => !lockedS[j] && v !== j); if (i < 0) return;
+    if (slots[i] != null){ slots[i] = null; draw(); }
+    glow(cardBtns[i]); say(`Picture ${i + 1}. ${P[i][1]}`);
+  };
+  say("Read the sentences. Put them under the right pictures.");
+}
+function storyQuestion(s, q){
+  const play = $("#play"); play.innerHTML = "";
+  newItem(q.d, q.full ? [q.right] : [], []);
+  const text = el("div", {class:"storytext"}, s.panels.map(p => el("p", {}, p[1])));
+  const box = el("div", {class:"options"});
+  shuffle([q.right].concat(q.wrong)).forEach(t => {
+    const b = el("button", {class:"opt", "data-t": t}, t);
+    b.addEventListener("click", () => {
+      if (item.done || locked()) return;
+      if (t === q.right){ b.classList.add("right"); win(q.full || `Yes. ${q.right}`, {output: !!q.full, delay:2000}); }
+      else { miss(b, 1600); say(q.full ? `Listen: ${q.q.replace("___", t)} Does it sound right? Try again.` : `Look at the story again. ${q.q}`); }
+    });
+    box.append(b);
+  });
+  play.append(text, el("p", {class:"q"}, q.q), box);
+  RUN.hintFn = () => { glow(box.querySelector(`[data-t="${CSS.escape(q.right)}"]`)); say(q.q); };
+  say(q.q);
+}
+
+/* ---------- Review cart (spaced repetition) ---------- */
+function startReview(){
+  const due = shuffle(dueIds()).slice(0, 10);
+  if (!due.length){ renderMap(); showView("map"); return; }
+  beginRun({levelId:null, stallId:"review", review:true, band:0, em:"🛒", name:"Review cart", bandLabel:"Spaced review · day 1, 3, 7, 14, 30", en:"Listen. Remember these words?", idn:"Dengarkan. Masih ingat kata-kata ini?"});
+  RUN.total = due.length;
+  RUN.roundFn = r => {
+    const it = LEX[due[r - 1]], s = S.srs[it.id];
+    const canSpell = s && s.spell && /^[a-z]+$/.test(it.w);
+    if (canSpell && Math.random() < 0.5){ RUN.band = 2; spellRound(it, 2, false); }
+    else { RUN.band = 0; tapRound(it, Object.keys(LEX).filter(id => LEX[id].t === it.t && id !== "toyduck"), 4, !!it.num); }
+  };
+  nextRound();
+}
+
+/* ---------- Parent & teacher view ---------- */
+function openParent(){
+  const live = liveMs();
+  let items = 0, first = 0, hints = 0;
+  Object.values(S.desc).forEach(s => { items += s.items; first += s.first; hints += s.hints; });
+  const acc = items ? Math.round(first / items * 100) : null;
+  let zone = {cls:"none", t:"No data yet"};
+  if (acc != null){ zone = acc > 85 ? {cls:"mid", t:"Too easy: move ahead"} : acc >= 70 ? {cls:"ok", t:"In the learning zone (70–85%)"} : {cls:"warn", t:"Hard: replay or use hints"}; }
+  const wkMs = (S.weeks[weekKey()] || 0) + live;
+  const srsIds = Object.keys(S.srs).filter(id => LEX[id]);
+  const mastered = srsIds.filter(id => S.srs[id].box >= 4);
+  const due = dueIds();
+  const sheet = $("#parentSheet"); sheet.innerHTML = "";
+  const rows = Object.keys(DESC).map(d => {
+    const s = S.desc[d];
+    let st = {cls:"none", t:"Not started"};
+    if (s && s.items){
+      const r = s.first / s.items;
+      if (s.items >= 5 && r >= 0.8 && s.stalls.length >= 2 && (s.days || []).length >= 2) st = {cls:"ok", t:"Mastered"};
+      else if (s.items >= 5 && r >= 0.8) st = {cls:"mid", t:"On track"};
+      else st = {cls:"mid", t:"Practising"};
+    }
+    return el("tr", {},
+      el("td", {}, el("span", {class:"chip id"}, d)),
+      el("td", {}, DESC[d].en, el("span", {class:"idl", lang:"id"}, DESC[d].id)),
+      el("td", {}, DESC[d].band),
+      el("td", {class:"num"}, s ? String(s.items) : "0"),
+      el("td", {class:"num"}, s && s.items ? `${Math.round(s.first / s.items * 100)}%` : "–"),
+      el("td", {class:"num"}, s && s.items ? (s.hints / s.items).toFixed(1) : "–"),
+      el("td", {class:"num"}, s ? `${s.stalls.length} / ${(s.days || []).length}` : "0 / 0"),
+      el("td", {}, el("span", {class:"state " + st.cls}, st.t)));
+  });
+  const stallRows = STALLS.map(st => {
+    const passed = st.levels.filter(l => starsOf(l.id) >= 2).length;
+    const three = st.levels.filter(l => starsOf(l.id) === 3).length;
+    const golds = st.levels.filter(l => isGold(l.id)).length;
+    const plays = st.levels.reduce((n, l) => n + lvState(l.id).plays, 0);
+    return el("tr", {}, el("td", {}, `${st.em} ${st.name}`), el("td", {}, st.bands),
+      el("td", {class:"num"}, `${passed} / ${st.levels.length}`), el("td", {class:"num"}, String(three)), el("td", {class:"num"}, String(golds)), el("td", {class:"num"}, String(plays)),
+      el("td", {}, el("span", {class:"state " + (stallUnlocked(st) ? "ok" : "none")}, stallUnlocked(st) ? "Open" : "Locked")));
+  });
+  function seg(values, cur, label, onSet){
+    return el("div", {class:"seg", role:"group", "aria-label": label}, values.map(v => el("button", {"aria-pressed": v === cur ? "true" : "false", onclick: () => { onSet(v); save(); renderMap(); openParent(); }}, String(v))));
+  }
+  let armed = false;
+  const reset = el("button", {class:"ghost"}, "Reset progress");
+  reset.addEventListener("click", () => { if (!armed){ armed = true; reset.textContent = "Tap again to erase all progress"; return; } const keep = {bahasa:S.bahasa, goalMin:S.goalMin, capMin:S.capMin}; S = Object.assign(fresh(), keep); save(); renderShields(); renderMap(); openParent(); });
+  const last7 = []; for (let i = 6; i >= 0; i--){ const d = new Date(Date.now() - i * DAY); last7.push([d, mins(S.days[dayKey(d)] || 0)]); }
+  sheet.append(
+    el("div", {class:"sheet-head"},
+      el("div", {}, el("h2", {id:"parentTitle"}, "Parent & teacher view"), el("p", {class:"sub"}, "Progress on each can-do, with its CEFR level · ", el("span", {lang:"id"}, "Bukti capaian untuk orang tua dan guru"))),
+      el("button", {class:"ghost", onclick: closeParent}, "Close")),
+    el("div", {class:"tiles4"},
+      el("div", {class:"stat"}, el("div", {class:"k"}, "This week (input)"), el("div", {class:"v"}, `${mins(wkMs)} / ${S.goalMin}`), el("div", {class:"n"}, `minutes · last 7 days: ${last7.map(([, m]) => m).join(" · ")}`)),
+      el("div", {class:"stat"}, el("div", {class:"k"}, "First-try accuracy"), el("div", {class:"v"}, acc == null ? "–" : `${acc}%`), el("div", {class:"n"}, el("span", {class:"state " + zone.cls}, zone.t))),
+      el("div", {class:"stat"}, el("div", {class:"k"}, "Sub-levels"), el("div", {class:"v"}, `${Object.keys(S.lv).filter(id => starsOf(id) >= 2).length} / ${TOTAL_LEVELS}`), el("div", {class:"n"}, `${Object.keys(S.lv).filter(isGold).length} gold (3 stars on 2 days)`)),
+      el("div", {class:"stat"}, el("div", {class:"k"}, "Words in review"), el("div", {class:"v"}, String(srsIds.length)), el("div", {class:"n"}, `${mastered.length} mastered · ${due.length} due now`))),
+    el("h3", {}, "Settings"),
+    el("div", {class:"setrow"}, el("label", {}, "Weekly goal (minutes)"), seg([60, 90, 120, 150], S.goalMin, "Weekly goal", v => { S.goalMin = v; })),
+    el("div", {class:"setrow"}, el("label", {}, "Daily break reminder"), seg([15, 20, 30, 45], S.capMin, "Daily break reminder in minutes", v => { S.capMin = v; })),
+    el("div", {class:"setrow"}, el("label", {}, "Open all stalls and levels"), seg(["Off", "On"], S.unlockAll ? "On" : "Off", "Unlock all", v => { S.unlockAll = v === "On"; })),
+    el("p", {class:"note"}, "Leave levels locked for steady progress. Unlock all only to let an older child skip ahead or to preview content."),
+    el("h3", {}, "Stalls"),
+    el("div", {class:"tablewrap"}, el("table", {},
+      el("thead", {}, el("tr", {}, ["Stall","Band","Passed (★★)","★★★","Gold","Plays","Status"].map(h => el("th", {}, h)))),
+      el("tbody", {}, stallRows))),
+    el("h3", {}, "Can-do evidence"),
+    el("div", {class:"tablewrap"}, el("table", {},
+      el("thead", {}, el("tr", {}, ["ID","Can-do","CEFR","Items","First try","Hints / item","Games / days","Status"].map(h => el("th", {}, h)))),
+      el("tbody", {}, rows))),
+    el("p", {class:"note"}, "Mastered = at least 5 items, 80% right on the first try, in 2 different games, on 2 different days. On track = the accuracy is there; it still needs a second game or a second day."),
+    el("h3", {}, "Words in spaced review"),
+    el("p", {class:"note", style:"margin-top:0"}, "Each word comes back on day 1, 3, 7, 14 and 30. A word counts as mastered after it is remembered at the 7-day review. Green = mastered, yellow = due now."),
+    el("div", {class:"words"}, srsIds.length ? srsIds.sort((a, b) => S.srs[b].box - S.srs[a].box).map(id => el("span", {class:"word" + (S.srs[id].box >= 4 ? " m" : due.includes(id) ? " r" : "")}, LEX[id].w)) : el("span", {class:"note"}, "Play a sub-level to start the review cart.")),
+    el("div", {class:"row", style:"justify-content:flex-start"}, reset),
+    el("p", {class:"note"}, "Progress is kept only in this browser on this device."));
+  $("#parent").hidden = false;
+  document.querySelector(".wrap").inert = true;
+  sheet.querySelector("button").focus();
+}
+function closeParent(){ $("#parent").hidden = true; document.querySelector(".wrap").inert = false; $("#parentBtn").focus(); }
+/* Keep Tab inside the open dialog (inert covers modern browsers; this loop covers the rest). */
+function trapTab(e){
+  if (e.key !== "Tab" || $("#parent").hidden) return;
+  const f = Array.from($("#parentSheet").querySelectorAll("button:not([disabled])")).filter(b => b.offsetParent);
+  if (!f.length) return;
+  const first = f[0], last = f[f.length - 1];
+  if (!$("#parent").contains(document.activeElement)){ e.preventDefault(); first.focus(); }
+  else if (e.shiftKey && document.activeElement === first){ e.preventDefault(); last.focus(); }
+  else if (!e.shiftKey && document.activeElement === last){ e.preventDefault(); first.focus(); }
+}
+
+/* ---------- Wiring ---------- */
+function renderBahasa(){
+  const b = $("#bahasaBtn");
+  b.setAttribute("aria-pressed", S.bahasa ? "true" : "false");
+  $("#bahasaState").textContent = S.bahasa ? "On" : "Off";
+  renderInstr();
+}
+function boot(data){
+  S = (data && data.S) ? Object.assign(fresh(), data.S) : (loadStore() || fresh());
+  $("#bahasaBtn").addEventListener("click", () => { S.bahasa = !S.bahasa; save(); renderBahasa(); });
+  $("#parentBtn").addEventListener("click", openParent);
+  $("#parent").addEventListener("click", e => { if (e.target.id === "parent") closeParent(); });
+  document.addEventListener("keydown", e => { if (e.key === "Escape" && !$("#parent").hidden) closeParent(); trapTab(e); });
+  $("#saveOk").addEventListener("click", () => { $("#saveBanner").hidden = true; });
+  if (!storageWorks()) warnSave();
+  // Ask Chrome to keep this app's storage even when the tablet runs low on space.
+  try{ if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); }catch(e){}
+  // Tablet app: closing or switching away mid-level saves the minutes played so far.
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden){
+      if (RUN && RUN.t0){ stopClock(); RUN.paused = true; }
+      try{ if (hasTTS) speechSynthesis.cancel(); }catch(e){}
+      save();
+    } else if (RUN && RUN.paused){ RUN.paused = false; RUN.t0 = Date.now(); }
+  });
+  // Android back gesture: step back one screen (dialog, level, stall) instead of closing the app.
+  try{
+    history.replaceState({pp:"base"}, "");
+    history.pushState({pp:"guard"}, "");
+    window.addEventListener("popstate", () => {
+      const view = document.body.dataset.view;
+      if (!$("#parent").hidden) closeParent();
+      else if (view === "stage") leaveStage();
+      else if (view === "stall"){ renderMap(); showView("map"); }
+      else { history.back(); return; }
+      history.pushState({pp:"guard"}, "");
+    });
+  }catch(e){}
+  $("#backBtn").addEventListener("click", leaveStage);
+  $("#replay").addEventListener("click", () => say(lastSay.text, lastSay.band));
+  $("#hintBtn").addEventListener("click", () => {
+    if (!RUN || !item || item.done || !RUN.hintFn) return;
+    item.hints++; setFeedback("Look for the glow.", "try"); RUN.hintFn();
+  });
+  $("#showId").addEventListener("click", () => { if (RUN){ RUN.showId = true; renderInstr(); } });
+  $("#capOk").addEventListener("click", () => { $("#capBanner").hidden = true; });
+  setInterval(() => {
+    const today = (S.days[dayKey()] || 0) + liveMs();
+    if (!capShown && today >= S.capMin * 60000){
+      capShown = true;
+      $("#capText").innerHTML = "";
+      $("#capText").append(el("b", {}, `You played ${S.capMin} minutes today. Great work!`), " Time for a break? · ", el("i", {lang:"id"}, "Istirahat dulu, besok main lagi ya."));
+      $("#capBanner").hidden = false;
+    }
+  }, 20000);
+  try{ window.claude && window.claude.hot && window.claude.hot.snapshot && window.claude.hot.snapshot(() => ({S})); }catch(e){}
+  renderBahasa(); renderShields(); renderMap(); showView("map");
+}
+window.__pasar = { LEVEL, STALLS, LEX, TOTAL_LEVELS };
+if (window.claude && window.claude.hot && window.claude.hot.ready) window.claude.hot.ready(boot);
+else boot((window.claude && window.claude.hot && window.claude.hot.data) || {});
+// Offline support + home-screen install (only works over https or localhost).
+if ("serviceWorker" in navigator && /^https:|^http:\/\/(localhost|127\.0\.0\.1)/.test(location.href)){
+  window.addEventListener("load", () => { navigator.serviceWorker.register("sw.js").catch(() => {}); });
+}
+})();
+</script>
+</body>
+</html>

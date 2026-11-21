@@ -222,6 +222,7 @@ header.top{display:flex;flex-wrap:wrap;gap:18px 28px;align-items:flex-end;justif
 .bag button{background:none;border:0;font-size:36px;line-height:1;padding:2px;min-width:48px;min-height:48px}
 .primary{background:var(--cabai);color:#fff;border:0;border-radius:14px;padding:14px 22px;font-weight:600;font-size:18px}
 .primary:disabled{opacity:.45}
+.primary.go{background:var(--leaf)}
 .options{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
 .opt{background:var(--paper);border:3px solid var(--edge);border-radius:16px;padding:14px;text-align:left;font-size:18px;font-weight:500}
 .opt:hover{border-color:var(--sea)}
@@ -986,11 +987,28 @@ function finishRun(){
     else if (stars < 2) goldNote = "Two stars open the next sub-level. Try again: you are learning!";
   }
   save();
-  const rec = recommended();
   const due = dueIds().length;
-  if (!RUN.review && due >= 3) nextBtns.push(el("button", {class:"primary", onclick: startReview}, `Review ${Math.min(due, 10)} words`));
-  if (rec) nextBtns.push(el("button", {class: nextBtns.length ? "ghost" : "primary", onclick: () => openLevel(rec.id)}, `Next: ${rec.stall.name} ${rec.code}`));
-  if (!RUN.review) nextBtns.push(el("button", {class:"ghost", onclick: () => openLevel(RUN.levelId)}, "Play again"));
+  let lockNote = null;
+  if (RUN.review){
+    const rec = recommended();
+    if (rec) nextBtns.push(el("button", {class:"primary", onclick: () => openLevel(rec.id)}, `Next: ${rec.stall.name} ${rec.code}`));
+  } else {
+    const lv = LEVEL[RUN.levelId], st = lv.stall;
+    const nextSub = st.levels[lv.idx + 1];
+    const ns = STALLS[STALLS.indexOf(st) + 1];
+    const retry = nextSub && !levelUnlocked(nextSub);
+    if (nextSub && !retry) nextBtns.push(el("button", {class:"primary", onclick: () => openLevel(nextSub.id)}, `Next level: ${nextSub.code}`));
+    if (retry) nextBtns.push(el("button", {class:"primary", onclick: () => openLevel(RUN.levelId)}, "Try again"));
+    if (ns && stallUnlocked(ns)){
+      const target = nextLevelIn(ns) || ns.levels[0];
+      nextBtns.push(el("button", {class:"primary go", onclick: () => openLevel(target.id)}, `Next stall: ${ns.name} ${target.code}`));
+    } else if (ns){
+      const left = 3 - st.levels.filter(l => starsOf(l.id) >= 2).length;
+      lockNote = `Pass ${left} more sub-level${left === 1 ? "" : "s"} here to open ${ns.name}.`;
+    }
+    if (due >= 3) nextBtns.push(el("button", {class:"ghost", onclick: startReview}, `Review ${Math.min(due, 10)} words`));
+    if (!retry) nextBtns.push(el("button", {class:"ghost", onclick: () => openLevel(RUN.levelId)}, "Play again"));
+  }
   nextBtns.push(el("button", {class:"ghost", onclick: leaveStage}, RUN.review ? "Market map" : "Back to stall"));
   play.append(el("div", {class:"end"},
     el("h3", {}, title),
@@ -998,6 +1016,7 @@ function finishRun(){
     el("p", {}, `${RUN.first} of ${RUN.items} right on the first try. Every try helps you learn.`),
     goldNote ? el("p", {class:"gold"}, goldNote) : null,
     el("p", {class:"note"}, `${mins(S.weeks[weekKey()] || 0)} of ${S.goalMin} minutes this week.`),
+    lockNote ? el("p", {class:"note"}, `🔒 ${lockNote}`) : null,
     el("div", {class:"row"}, nextBtns)));
   say(stars === 3 ? "Fantastic! Well done!" : "Well done! Good work!");
 }

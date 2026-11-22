@@ -2,7 +2,7 @@
 // App files are cached on install, so the game opens with no internet.
 // Google Fonts are cached the first time they load; offline before that, the game falls back to system fonts.
 // To ship an update: change VERSION, push, then open the app twice on the tablet (first open fetches, second open uses it).
-const VERSION = "pasar-pagi-v2";
+const VERSION = "pasar-pagi-v3";
 const APP = ["./", "./index.html", "./manifest.webmanifest", "./icons/icon-192.png", "./icons/icon-512.png", "./icons/icon-32.png"];
 const FONTS = "pasar-pagi-fonts";
 

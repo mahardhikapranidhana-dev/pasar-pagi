@@ -260,6 +260,21 @@ header.top{display:flex;flex-wrap:wrap;gap:18px 28px;align-items:flex-end;justif
 .end .stars{font-size:44px}
 .end .chips{justify-content:center;max-width:560px}
 .end .gold{background:var(--soft);border-radius:12px;padding:8px 14px;font-size:15px}
+/* Quick check (placement) */
+.choice .combo{font-size:clamp(34px,6.5vw,52px);line-height:1.15;text-align:center}
+.choice .combo.many{font-size:clamp(24px,4.6vw,34px)}
+.pick2{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-top:6px}
+.pickcard{background:var(--paper);border:3px solid var(--edge);border-radius:20px;padding:18px;text-align:left;display:flex;flex-direction:column;gap:6px}
+.pickcard .pe{font-size:40px;line-height:1}
+.pickcard b{font-family:var(--display);font-size:22px;color:var(--ink)}
+.pickcard span{font-size:15px;color:var(--muted)}
+@media (hover:hover){.pickcard:hover{border-color:var(--sea)}}
+.readline{font-size:26px;background:#fbfdfc;border:1px solid var(--line);border-radius:16px;padding:12px 16px;max-width:40ch}
+.storytext.big p{font-size:20px}
+.spellpic{font-size:80px;line-height:1;margin:4px 0 8px}
+.options.wordopts{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+.options.wordopts .opt{text-align:center;font-size:22px;font-weight:600}
+.gapline .blank-w{display:inline-block;min-width:90px;border-bottom:3px solid var(--ink);margin:0 4px}
 
 .banner{background:var(--soft);border:2px solid var(--mango);border-radius:16px;padding:12px 16px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:16px}
 .overlay{position:fixed;inset:0;background:rgba(27,41,37,.5);display:flex;align-items:flex-start;justify-content:center;padding:24px 12px;overflow-y:auto;z-index:10}
@@ -373,6 +388,7 @@ footer{color:var(--muted);font-size:13px;padding:0 0 28px}
   <main>
     <section id="mapView" aria-labelledby="mapTitle">
       <div class="today" id="today"></div>
+      <div id="checkCard" class="banner" hidden></div>
       <div class="map-head">
         <h2 id="mapTitle">Choose a stall</h2>
         <p>Each stall is a ladder of sub-levels. Two stars open the next one; three stars on two different days earn a gold medal.</p>
@@ -659,7 +675,7 @@ const LEVEL = {}; STALLS.forEach(st => st.levels.forEach(lv => { LEVEL[lv.id] = 
 const TOTAL_LEVELS = Object.keys(LEVEL).length;
 
 /* ---------- State ---------- */
-function fresh(){ return {lv:{}, desc:{}, words:{}, srs:{}, turns:0, activeMs:0, days:{}, weeks:{}, last:{}, bahasa:true, goalMin:120, capMin:30, unlockAll:false}; }
+function fresh(){ return {lv:{}, desc:{}, words:{}, srs:{}, turns:0, activeMs:0, days:{}, weeks:{}, last:{}, bahasa:true, goalMin:120, capMin:30, unlockAll:false, start:0, check:null, checkHidden:false}; }
 function loadStore(){ try{ const raw = localStorage.getItem(KEY); if (raw) return Object.assign(fresh(), JSON.parse(raw)); }catch(e){} return null; }
 let S = fresh();
 let saveFailed = false, saveWarned = false;
@@ -780,28 +796,40 @@ function dueIds(){ const now = Date.now(); return Object.keys(S.srs).filter(id =
 const lvState = id => S.lv[id] || {stars:0, plays:0, goldDays:[]};
 const isGold = id => new Set(lvState(id).goldDays).size >= 2;
 const starsOf = id => lvState(id).stars;
+/* S.start is the starting band from the quick check (0 = from the beginning). Stalls at or
+   below it open; inside a stall, sub-levels below it open plus the first one at it. From
+   there the ladder still applies: two stars open the next sub-level. */
+const startBand = () => S.start || 0;
+const stallBand = st => Math.min(...st.levels.map(l => l.band));
 function stallUnlocked(st){
   const i = STALLS.indexOf(st);
-  if (i === 0 || S.unlockAll) return true;
+  if (i === 0 || S.unlockAll || stallBand(st) <= startBand()) return true;
   const prev = STALLS[i - 1];
   return prev.levels.filter(l => starsOf(l.id) >= 2).length >= 3;
 }
 function levelUnlocked(lv){
   if (!stallUnlocked(lv.stall)) return false;
   if (S.unlockAll || lv.idx === 0) return true;
-  return starsOf(lv.stall.levels[lv.idx - 1].id) >= 2;
+  const prev = lv.stall.levels[lv.idx - 1];
+  if (lv.band < startBand() || prev.band < startBand()) return true;
+  return starsOf(prev.id) >= 2;
 }
 function nextLevelIn(st){
   if (!stallUnlocked(st)) return null;
-  return st.levels.find(l => levelUnlocked(l) && starsOf(l.id) < 2)
+  return st.levels.find(l => l.band >= startBand() && levelUnlocked(l) && starsOf(l.id) < 2)
+      || st.levels.find(l => levelUnlocked(l) && starsOf(l.id) < 2)
       || st.levels.find(l => levelUnlocked(l) && starsOf(l.id) < 3)
       || st.levels.find(l => levelUnlocked(l) && !isGold(l.id)) || null;
 }
 function recommended(){
   const cands = STALLS.map(nextLevelIn).filter(Boolean);
   if (!cands.length) return null;
-  cands.sort((a, b) => (S.last[a.stall.id] || 0) - (S.last[b.stall.id] || 0));
-  return cands[0];
+  const fit = cands.filter(l => l.band >= startBand() && starsOf(l.id) < 2);
+  const list = fit.length ? fit : cands;
+  // Least recently played stall first; on a tie, the stall that starts at the starting band.
+  const home = l => stallBand(l.stall) === startBand() ? 1 : 0;
+  list.sort((a, b) => ((S.last[a.stall.id] || 0) - (S.last[b.stall.id] || 0)) || (home(b) - home(a)));
+  return list[0];
 }
 function liveMs(){ return RUN && RUN.t0 ? Date.now() - RUN.t0 : 0; }
 function stopClock(){
@@ -867,8 +895,20 @@ function renderToday(){
       el("p", {class:"plan"}, planBits.length ? `Today's trip: ${planBits.join(" → ")}` : "Everything is done for now. Come back tomorrow for review!"),
       el("button", {class:"big", onclick: startTrip, disabled: planBits.length ? null : "disabled"}, "Start today's trip →")));
 }
+function renderCheckCard(){
+  const cc = $("#checkCard"); cc.innerHTML = "";
+  cc.hidden = !!(S.check || S.checkHidden);
+  if (cc.hidden) return;
+  cc.append(
+    el("span", {}, el("b", {}, "Already learning English at school?"), " Take the 3-minute quick check to open the stalls that fit you. · ",
+      el("i", {lang:"id"}, "Sudah belajar bahasa Inggris di sekolah? Ikuti cek singkat 3 menit.")),
+    el("div", {class:"row", style:"margin:0"},
+      el("button", {class:"primary go", onclick: startCheck}, "Take the quick check"),
+      el("button", {class:"ghost", onclick: () => { S.checkHidden = true; save(); renderCheckCard(); }}, "Not now")));
+}
 function renderMap(){
   renderToday();
+  renderCheckCard();
   const box = $("#stalls"); box.innerHTML = "";
   const rec = recommended();
   STALLS.forEach((st, i) => {
@@ -942,6 +982,7 @@ function beginRun(cfg){
   $("#stName").textContent = RUN.name;
   $("#stBand").textContent = RUN.bandLabel;
   $("#promptBar").hidden = false;
+  $("#hintBtn").hidden = false;
   renderInstr(); setFeedback(""); showView("stage");
 }
 function openLevel(id){
@@ -956,7 +997,7 @@ function leaveStage(){
   try{ if (hasTTS) speechSynthesis.cancel(); }catch(e){}
   const st = RUN && RUN.stallId;
   RUN = null; item = null;
-  if (st && st !== "review") openStallPage(st); else { renderMap(); showView("map"); }
+  if (st && st !== "review" && st !== "check") openStallPage(st); else { renderMap(); showView("map"); }
 }
 function nextRound(){
   RUN.round++;
@@ -1525,6 +1566,146 @@ function startReview(){
   nextRound();
 }
 
+/* ---------- Quick check (placement) ----------
+   Four short parts, one per band. 3 of 4 right passes a part; 2 wrong ends the check.
+   The first part not passed is the starting band. The first option in each list is right. */
+const CHECK = [
+  {en:"Listen. Tap the right picture.", idn:"Dengarkan, lalu sentuh gambar yang benar.", groups:[[
+    {say:"Find the banana.", opts:["🍌","🍎","🍇"]},
+    {say:"Find the cat.", opts:["🐱","🐶","🐟"]},
+    {say:"Tap blue.", sw:true, opts:["c-blue","c-red","c-yellow"]},
+    {say:"Find the ball.", opts:["⚽","🚗","🪁"]},
+    {say:"Find three apples.", opts:["🍎🍎🍎","🍎🍎","🍎🍎🍎🍎🍎"]},
+    {say:"Find the egg.", opts:["🥚","🍞","🥛"]},
+    {say:"Tap green.", sw:true, opts:["c-green","c-pink","c-brown"]},
+    {say:"Find the duck.", opts:["🦆","🐔","🐸"]}]]},
+  {en:"Listen to the sentence. Tap the right picture.", idn:"Dengarkan kalimatnya, lalu sentuh gambar yang benar.", groups:[[
+    {say:"Three red apples.", opts:["🍎🍎🍎","🍎🍎","🍏🍏🍏"]},
+    {say:"Two dogs and one cat.", opts:["🐶🐶🐱","🐶🐱🐱","🐶🐶🐶"]},
+    {say:"Five eggs, please.", opts:["🥚🥚🥚🥚🥚","🥚🥚🥚🥚","🍞🍞🍞🍞🍞"]},
+    {say:"The baby is sleeping.", opts:["👶🏽💤","👶🏽🍼","👵🏽💤"]},
+    {say:"Grandpa is reading a book.", opts:["👴🏽📕","👵🏽📕","👴🏽⚽"]},
+    {say:"There are four fish.", opts:["🐟🐟🐟🐟","🐟🐟🐟","🐸🐸🐸🐸"]},
+    {say:"I've got a hat and shoes.", opts:["👒👟","👒👜","🧦👟"]},
+    {say:"Mum is eating rice.", opts:["👩🏽🍚","👩🏽🍞","👨🏽🍚"]}]]},
+  {en:"Read. Choose the right answer.", idn:"Baca, lalu pilih jawaban yang benar.", groups:[[
+    {read:"The boy is eating an apple.", opts:["👦🏽🍎","👧🏽🍎","👦🏽🍌"]},
+    {read:"There are three cats and one dog.", opts:["🐱🐱🐱🐶","🐱🐶🐶🐶","🐱🐱🐶"]},
+    {read:"Dad is riding a bike.", opts:["👨🏽🚲","👨🏽🚗","👩🏽🚲"]},
+    {read:"Two girls are playing football.", opts:["👧🏽👧🏽⚽","👦🏽👦🏽⚽","👧🏽👧🏽🪁"]}
+  ],[
+    {pic:"🐟", opts:["fish","fihs","fsih"]},
+    {pic:"🦁", opts:["lion","loin","lian"]},
+    {pic:"🍌", opts:["banana","bananna","banan"]},
+    {pic:"🪑", opts:["chair","chiar","cair"]}]]},
+  {en:"Read. Choose the right answer.", idn:"Baca, lalu pilih jawaban yang benar.", groups:[[
+    {text:"Budi was hungry, so he went to the warung and bought some rice.", q:"Why did Budi go to the warung?", opts:["Because he was hungry.","Because it was raining.","Because he was tired."]},
+    {text:"Sari got up at six o'clock. First she had breakfast, then she walked to school.", q:"What did Sari do after breakfast?", opts:["She walked to school.","She got up.","She went to bed."]},
+    {text:"It was very hot on Saturday, so Dimas and his sister swam in the river.", q:"Who swam in the river?", opts:["Dimas and his sister.","Dimas and his dad.","Only Dimas."]},
+    {text:"Rina wanted to fly her kite, but there was no wind. She read a book instead.", q:"Why didn't Rina fly her kite?", opts:["Because there was no wind.","Because she was ill.","Because it was dark."]}
+  ],[
+    {gap:"I like mangoes, ___ I don't like bananas.", opts:["but","because","or"]},
+    {gap:"Dina stayed at home ___ she was ill.", opts:["because","but","or"]},
+    {gap:"We washed our hands, ___ we had lunch.", opts:["then","because","or"]},
+    {gap:"Do you want rice ___ noodles?", opts:["or","because","but"]}]]}
+];
+const START_COPY = [
+  {st:"tap", t:"Let's start at Listen & Tap!", b:"Start with picture words. Two stars open the next sub-level.", id:"Mulai dari kata bergambar. Dua bintang membuka level berikutnya."},
+  {st:"toys", t:"Start at the Toy Stall!", b:"You know lots of words. The Toy Stall and Bu Ani's Warung are open for you.", id:"Kamu sudah tahu banyak kata. Toy Stall dan Warung Bu Ani sudah terbuka."},
+  {st:"spell", t:"Start at the Letter Stall!", b:"You can read short sentences. The Letter Stall is open, and so are the easier levels in the Toy Stall and the Warung.", id:"Kamu bisa membaca kalimat pendek. Letter Stall sudah terbuka."},
+  {st:"story", t:"Start at the Story Mat!", b:"You can read and understand short stories. All five stalls are open for you.", id:"Kamu bisa membaca dan memahami cerita pendek. Semua kios sudah terbuka."}
+];
+const START_LABELS = ["Pre-A1", "A1.1", "A1.2", "A2.1"];
+let CK = null;
+function stageBlank(){ $("#promptBar").hidden = true; $("#roundTxt").textContent = ""; $("#dots").innerHTML = ""; $("#play").innerHTML = ""; setFeedback(""); }
+function showWelcome(){
+  beginRun({levelId:null, stallId:"check", review:false, band:0, em:"🍉", name:"Welcome to Pasar Pagi!", bandLabel:"Choose where to start", en:"Where should you start?", idn:"Mulai dari mana?"});
+  RUN.t0 = 0;
+  stageBlank();
+  $("#play").append(el("div", {class:"pick2"},
+    el("button", {class:"pickcard", onclick: () => { S.checkHidden = true; save(); leaveStage(); }},
+      el("span", {class:"pe", "aria-hidden":"true"}, "🌱"), el("b", {}, "Start from the beginning"),
+      el("span", {}, "New to English, or SD kelas 1–2"), el("span", {lang:"id"}, "Baru belajar bahasa Inggris, atau SD kelas 1–2")),
+    el("button", {class:"pickcard", onclick: startCheck},
+      el("span", {class:"pe", "aria-hidden":"true"}, "🧭"), el("b", {}, "Take the quick check"),
+      el("span", {}, "About 3 minutes, for SD kelas 3–6. Opens the stalls that fit you."), el("span", {lang:"id"}, "Sekitar 3 menit, untuk SD kelas 3–6"))));
+}
+function startCheck(){
+  beginRun({levelId:null, stallId:"check", review:false, band:0, em:"🧭", name:"Quick check", bandLabel:"Find your starting stall", en:CHECK[0].en, idn:CHECK[0].idn});
+  CK = {part:0, qs:[], i:0, right:0, wrong:0, passed:0};
+  checkPart(0);
+}
+function checkPart(p){
+  const P = CHECK[p];
+  Object.assign(CK, {part:p, i:0, right:0, wrong:0});
+  CK.qs = shuffle(P.groups.length === 1 ? shuffle(P.groups[0]).slice(0, 4) : P.groups.flatMap(g => shuffle(g).slice(0, 2)));
+  RUN.band = p; RUN.en = P.en; RUN.idn = P.idn; RUN.showId = false; renderInstr();
+  checkQ();
+}
+const glyphs = t => { try{ return [...new Intl.Segmenter().segment(t)].length; }catch(e){ return [...t].length; } };
+// One size per question, set by its longest option, so no option stands out by size.
+function combo(s, n){ return el("span", {class: n === 1 ? "emoji" : n <= 3 ? "combo" : "combo many"}, s); }
+function checkQ(){
+  const q = CK.qs[CK.i];
+  const play = $("#play"); play.innerHTML = ""; setFeedback("");
+  item = {done:false};
+  $("#roundTxt").textContent = `Part ${CK.part + 1} of ${CHECK.length}`;
+  const d = $("#dots"); d.innerHTML = "";
+  for (let i = 0; i < 4; i++) d.append(el("i", {class: i < CK.i ? "done" : i === CK.i ? "now" : ""}));
+  $("#promptBar").hidden = !q.say; $("#hintBtn").hidden = true;
+  lockFor(400);
+  const words = !!(q.pic || q.text || q.gap);
+  const box = el("div", {class: words ? "options" + (q.text ? "" : " wordopts") : "choice-grid"});
+  let rightBtn = null;
+  shuffle(q.opts.map((o, i) => [o, i === 0])).forEach(([o, ok]) => {
+    let b;
+    if (words) b = el("button", {class:"opt"}, o);
+    else if (q.sw) b = el("button", {class:"choice", "aria-label": LEX[o].w}, el("span", {class:"swatch", style:`background:${LEX[o].sw}`}));
+    else b = el("button", {class:"choice"}, combo(o, Math.max(...q.opts.map(glyphs))));
+    if (ok) rightBtn = b;
+    b.addEventListener("click", () => checkPick(b, ok, rightBtn));
+    box.append(b);
+  });
+  if (q.say){ play.append(box); say(q.say); }
+  else if (q.read) play.append(el("p", {class:"q readline"}, q.read), box);
+  else if (q.pic) play.append(el("div", {class:"spellpic", role:"img", "aria-label":"picture"}, q.pic), el("p", {class:"q"}, "Which word is right?"), box);
+  else if (q.text) play.append(el("div", {class:"storytext big"}, el("p", {}, q.text)), el("p", {class:"q"}, q.q), box);
+  else { const [a, z] = q.gap.split("___"); play.append(el("p", {class:"q"}, "Choose the missing word."), el("p", {class:"q readline gapline"}, a, el("span", {class:"blank-w", "aria-label":"blank"}), z), box); }
+}
+function checkPick(b, ok, rightBtn){
+  if (!item || item.done || locked()) return;
+  item.done = true;
+  if (ok){ CK.right++; b.classList.add("right"); tone("good"); setFeedback(pick(PRAISE_FIRST)); }
+  else { CK.wrong++; tone("soft"); b.classList.add("wobble"); rightBtn.classList.add("right"); setFeedback("Good try! This one is right.", "try"); }
+  CK.i++;
+  later(checkNext, ok ? 1100 : 2000);
+}
+function checkNext(){
+  if (CK.right >= 3){ CK.passed++; return CK.part + 1 < CHECK.length ? checkPart(CK.part + 1) : checkDone(); }
+  if (CK.wrong >= 2) return checkDone();
+  checkQ();
+}
+function checkDone(){
+  stopClock();
+  const band = Math.min(CK.passed, 3), before = startBand();
+  S.start = Math.max(before, band);
+  S.check = {day: dayKey(), band, parts: CK.passed};
+  S.checkHidden = true;
+  save(); tone("done");
+  stageBlank();
+  RUN.band = 0; RUN.en = "Quick check done!"; RUN.idn = "Cek singkat selesai!"; renderInstr();
+  const c = START_COPY[S.start], st = STALLS.find(s => s.id === c.st), target = nextLevelIn(st) || st.levels[0];
+  $("#play").append(el("div", {class:"end"},
+    el("h3", {}, c.t),
+    el("p", {}, `You passed ${CK.passed} of ${CHECK.length} parts.`, before > band ? " Your open stalls stay open." : ""),
+    el("p", {}, c.b, el("br"), el("i", {lang:"id"}, c.id)),
+    el("div", {class:"chips"}, STALLS.filter(stallUnlocked).map(s => el("span", {class:"chip"}, `${s.em} ${s.name}`))),
+    el("div", {class:"row"},
+      el("button", {class:"primary", onclick: () => openLevel(target.id)}, `Go to ${st.name} ${target.code}`),
+      el("button", {class:"ghost", onclick: leaveStage}, "Market map"))));
+  say(c.t);
+}
+
 /* ---------- Parent & teacher view ---------- */
 function openParent(){
   const live = liveMs();
@@ -1585,8 +1766,12 @@ function openParent(){
     el("h3", {}, "Settings"),
     el("div", {class:"setrow"}, el("label", {}, "Weekly goal (minutes)"), seg([60, 90, 120, 150], S.goalMin, "Weekly goal", v => { S.goalMin = v; })),
     el("div", {class:"setrow"}, el("label", {}, "Daily break reminder"), seg([15, 20, 30, 45], S.capMin, "Daily break reminder in minutes", v => { S.capMin = v; })),
+    el("div", {class:"setrow"}, el("label", {}, "Starting band"), seg(START_LABELS, START_LABELS[startBand()], "Starting band", v => { S.start = START_LABELS.indexOf(v); })),
+    el("p", {class:"note"}, S.check ? `Quick check on ${S.check.day}: passed ${S.check.parts} of ${CHECK.length} parts, placed at ${BANDS[S.check.band]}.${S.check.band < startBand() ? ` The starting band stayed at ${START_LABELS[startBand()]}.` : ""} ` : "No quick check yet. ",
+      "Stalls below the starting band open; two stars still open each next sub-level."),
+    el("div", {class:"row", style:"justify-content:flex-start;margin-top:6px"}, el("button", {class:"ghost", onclick: () => { closeParent(); startCheck(); }}, S.check ? "Run the quick check again" : "Run the quick check")),
     el("div", {class:"setrow"}, el("label", {}, "Open all stalls and levels"), seg(["Off", "On"], S.unlockAll ? "On" : "Off", "Unlock all", v => { S.unlockAll = v === "On"; })),
-    el("p", {class:"note"}, "Leave levels locked for steady progress. Unlock all only to let an older child skip ahead or to preview content."),
+    el("p", {class:"note"}, "Leave levels locked for steady progress. To let an older child skip ahead, use the quick check or the starting band. Unlock all is for previewing content."),
     el("h3", {}, "Stalls"),
     el("div", {class:"tablewrap"}, el("table", {},
       el("thead", {}, el("tr", {}, ["Stall","Band","Passed (★★)","★★★","Gold","Plays","Status"].map(h => el("th", {}, h)))),
@@ -1625,7 +1810,9 @@ function renderBahasa(){
   renderInstr();
 }
 function boot(data){
-  S = (data && data.S) ? Object.assign(fresh(), data.S) : (loadStore() || fresh());
+  const stored = (data && data.S) ? null : loadStore();
+  const isNew = !(data && data.S) && !stored;
+  S = (data && data.S) ? Object.assign(fresh(), data.S) : (stored || fresh());
   $("#bahasaBtn").addEventListener("click", () => { S.bahasa = !S.bahasa; save(); renderBahasa(); });
   $("#parentBtn").addEventListener("click", openParent);
   $("#parent").addEventListener("click", e => { if (e.target.id === "parent") closeParent(); });
@@ -1674,6 +1861,7 @@ function boot(data){
   }, 20000);
   try{ window.claude && window.claude.hot && window.claude.hot.snapshot && window.claude.hot.snapshot(() => ({S})); }catch(e){}
   renderBahasa(); renderShields(); renderMap(); showView("map");
+  if (isNew) showWelcome();
 }
 window.__pasar = { LEVEL, STALLS, LEX, TOTAL_LEVELS };
 if (window.claude && window.claude.hot && window.claude.hot.ready) window.claude.hot.ready(boot);
